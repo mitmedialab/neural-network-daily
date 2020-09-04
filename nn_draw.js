@@ -14,10 +14,11 @@ let check4;
 
 function preload(){
   	img = loadImage("data/elephant.jpg");
-  	stepText = "Input node: Draw an outline of a feature on the image in 30 pixels"
+  	stepText = "STEP 1. \nInput node: Draw an outline of a feature on the image in 30 pixels"
 }
 
 function setup() {
+
  	createCanvas(2500, 1000);
  	image(img, 20, 40, 600, 400);
 
@@ -28,33 +29,35 @@ function setup() {
  	let rect3 = rect(1240, 100+img.height, img.width, img.height);
  	let rect4 = rect(1850, 100+img.height, img.width, img.height);
 
-  	button = createButton('Send');
+  	button = createButton('SEND');
   	button.position(660, 420);
   	button.size(100,40);
-  	let col = color(244, 250, 244);
+  	let col = color(207, 106, 135);
+  	let textCol = color(255,255,255)
   	button.style('background-color', col);
+  	button.style('color', textCol);
   	button.style('font-family', 'menlo');
   	button.style('font-size', '18px');
   	button.mousePressed(resetDraw);
 
 
   	check1 = createCheckbox(' Preview in canvas', false);
-	check1.position(50, 950);
+	check1.position(50, 1000);
 	check1.style('font-family', 'menlo');
 	check1.style('font-size', '18px');
 
 	check2 = createCheckbox(' Preview in canvas', false);
-	check2.position(660, 950);
+	check2.position(660, 1000);
 	check2.style('font-family', 'menlo');
 	check2.style('font-size', '18px');
 
 	check3 = createCheckbox(' Preview in canvas', false);
-	check3.position(1270, 950);
+	check3.position(1270, 1000);
 	check3.style('font-family', 'menlo');
 	check3.style('font-size', '18px');
 
 	check4 = createCheckbox(' Preview in canvas', false);
-	check4.position(1880, 950);
+	check4.position(1880, 1000);
 	check4.style('font-family', 'menlo');
 	check4.style('font-size', '18px');
 
@@ -76,18 +79,17 @@ function mouseDragged() {
  		// noStroke();
  		line(mouseX + round*610, mouseY+60+img.height, pmouseX + round*610, pmouseY+60+img.height);
 
-
  		count++;
  	}
  	
 }
 
 function draw() {
-	fill(20, 200, 95);
+	fill(196, 69, 105);
 	noStroke();
 	textSize(25);
   	textFont('menlo');
-	text(stepText, 20, 20);
+	text(stepText, 640, 280);
 
 
 	let inputOne = get(20, 100+img.height, img.width, img.height);
@@ -125,7 +127,7 @@ function resetDraw() {
 	else {
 		fill(256);
 		rect(0,0,1300,40);	
-		stepText = "Hidden Node: Select TWO drawings from the canvases below to overlay";
+		stepText = "STEP 2. \nHidden Node: Select TWO drawings from the canvases below to overlay";
 		
 		fill(250);
 		rect(20,40,600,400);
