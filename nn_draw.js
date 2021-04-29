@@ -11,15 +11,16 @@ let check1;
 let check2;
 let check3;
 let check4;
+let stage = 0;
 
 function preload(){
-  	img = loadImage("data/elephant.jpg");
+  	img = loadImage("data/walrus.jpg");
   	stepText = "STEP 1. \nInput node: Draw an outline of a feature on the image in 30 pixels"
 }
 
 function setup() {
 
- 	createCanvas(2500, 1000);
+ 	createCanvas(2600, 1600);
  	image(img, 20, 40, 600, 400);
 
  	noFill();
@@ -28,6 +29,12 @@ function setup() {
  	let rect2 = rect(630, 100+img.height, img.width, img.height);
  	let rect3 = rect(1240, 100+img.height, img.width, img.height);
  	let rect4 = rect(1850, 100+img.height, img.width, img.height);
+
+ 	// second level
+ 	// let rect5 = rect(20, 150+2*img.height, img.width, img.height);
+ 	// let rect6 = rect(630, 150+2*img.height, img.width, img.height);
+ 	// let rect7 = rect(1240, 150+2*img.height, img.width, img.height);
+ 	// let rect8 = rect(1850, 150+2*img.height, img.width, img.height);
 
   	button = createButton('SEND');
   	button.position(660, 420);
@@ -61,14 +68,35 @@ function setup() {
 	check4.style('font-family', 'menlo');
 	check4.style('font-size', '18px');
 
-  
+	// Second level
+	// check5 = createCheckbox(' Preview in canvas', false);
+	// check5.position(50, 1500);
+	// check5.style('font-family', 'menlo');
+	// check5.style('font-size', '18px');
+
+	// check6 = createCheckbox(' Preview in canvas', false);
+	// check6.position(660, 1500);
+	// check6.style('font-family', 'menlo');
+	// check6.style('font-size', '18px');
+
+	// check7 = createCheckbox(' Preview in canvas', false);
+	// check7.position(1270, 1500);
+	// check7.style('font-family', 'menlo');
+	// check7.style('font-size', '18px');
+
+	// check8 = createCheckbox(' Preview in canvas', false);
+	// check8.position(1880, 1500);
+	// check8.style('font-family', 'menlo');
+	// check8.style('font-size', '18px');
+
+
 
  // pg = createGraphics(1000,1000);
 }
 
 function mouseDragged() { 
  	
- 	if (count<30 && mouseX<620 && mouseY<460) {
+ 	if (count<40 && mouseX<620 && mouseY<460) {
  		stroke(10, 250, 30); 
  		strokeWeight(4);
  		// noStroke();
@@ -77,8 +105,10 @@ function mouseDragged() {
  		stroke(10, 10, 10); 
  		strokeWeight(4);
  		// noStroke();
- 		line(mouseX + round*610, mouseY+60+img.height, pmouseX + round*610, pmouseY+60+img.height);
+ 		if(round<=3){line(mouseX + round*610, mouseY+60+img.height, pmouseX + round*610, pmouseY+60+img.height);}
+ 		// Second level
 
+ 		// if(round>3) {line(mouseX + (round-4)*610, mouseY+80+2*img.height, pmouseX + (round-4)*610, pmouseY+80+2*img.height);}
  		count++;
  	}
  	
@@ -91,17 +121,30 @@ function draw() {
   	textFont('menlo');
 	text(stepText, 640, 280);
 
+	// fill(240, 69, 105);
+	// text("INCORRECT. Modify your strategy and try again.", 640, 230);
+
 
 	let inputOne = get(20, 100+img.height, img.width, img.height);
 	let inputTwo = get(630, 100+img.height, img.width, img.height);
 	let inputThree = get(1240, 100+img.height, img.width, img.height);
 	let inputFour = get(1850, 100+img.height, img.width, img.height);
 
+	// Second level
+
+
+	// let inputFive = get(20, 120+2*img.height, img.width, img.height);
+	// let inputSix = get(630, 120+2*img.height, img.width, img.height);
+	// let inputSeven = get(1240, 120+2*img.height, img.width, img.height);
+	// let inputEight = get(1850, 120+2*img.height, img.width, img.height);
+
 
 	if(check1.checked())
 		{
-			image(inputOne, 20, 40);
+			image(inputTwo, 20, 40);
 		}
+	
+
 	if(check2.checked())
 		{
 			image(inputTwo, 20, 40);
@@ -115,7 +158,26 @@ function draw() {
 		{
 			image(inputFour, 20, 40);
 		}
-		
+
+
+	// Scond level
+	// if(check5.checked())
+	// 	{
+	// 		image(inputFive, 20, 40);
+	// 	}
+	// if(check6.checked())
+	// 	{
+	// 		image(inputSix, 20, 40);
+	// 	}
+
+	// if(check7.checked())
+	// 	{
+	// 		image(inputSeven, 20, 40);
+	// 	}
+	// if(check8.checked())
+	// 	{
+	// 		image(inputEight, 20, 40);
+	// 	}
 }
 
 
@@ -126,16 +188,12 @@ function resetDraw() {
 	}
 	else {
 		fill(256);
-		rect(0,0,1300,40);	
+		rect(630,250,1300,100);	
 		stepText = "STEP 2. \nHidden Node: Select TWO drawings from the canvases below to overlay";
 		
 		fill(250);
 		rect(20,40,600,400);
 		// image(inputTwo, 20, 40);
-
-
-		
-
 
 	}
 
