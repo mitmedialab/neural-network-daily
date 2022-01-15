@@ -1,0 +1,24 @@
+{
+  "name": "contours-to-classification-client",
+  "version": "0.0.1",
+  "scripts": {
+    "setup": "npm install",
+    "build:svelte": "svelte-kit build",
+    "preview:svelte": "svelte-kit preview",
+    "check:svelte": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "next",
+    "@sveltejs/adapter-static": "^1.0.0-next.26",
+    "@sveltejs/kit": "next",
+    "socket.io-client": "^4.4.1",
+    "svelte": "^3.44.0",
+    "svelte-check": "^2.2.6",
+    "svelte-preprocess": "^4.9.4",
+    "svelte2tsx": "^0.4.14",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.4"
+  },
+  "type": "module",
+  "module": "es2020"
+}

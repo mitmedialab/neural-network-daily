@@ -2,34 +2,31 @@
   "name": "my-app",
   "version": "0.0.1",
   "scripts": {
-    "dev": "svelte-kit dev",
-    "build": "svelte-kit build",
-    "package": "svelte-kit package",
-    "preview": "svelte-kit preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-    "lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. . && eslint --ignore-path .gitignore .",
-    "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. ."
+    "setup:client": "npm run --prefix src/client/ setup",
+    "setup:server": "npm install",
+    "setup": "npm run setup:client && npm run setup:server",
+    "build:client": "npm run --prefix src/client/ build:svelte",
+    "build:server": "./node_modules/.bin/tsc -p src/server/tsconfig.json",
+    "cleanup": "",
+    "build": "npm run build:client && npm run build:server && npm run cleanup",
+    "dev": "./node_modules/.bin/nodemon",
+    "production": "npm run build && NODE_ENV=production node ./build/server/server.js"
   },
   "devDependencies": {
-    "@sveltejs/adapter-auto": "next",
-    "@sveltejs/kit": "next",
-    "@typescript-eslint/eslint-plugin": "^4.31.1",
-    "@typescript-eslint/parser": "^4.31.1",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-svelte3": "^3.2.1",
+    "@types/express": "^4.17.13",
+    "@types/node": "^17.0.8",
+    "connect-livereload": "^0.6.1",
+    "express": "^4.17.2",
+    "install": "^0.13.0",
+    "livereload": "^0.9.3",
+    "nodemon": "^2.0.15",
+    "npm": "^8.3.1",
     "prettier": "^2.4.1",
-    "prettier-plugin-svelte": "^2.4.0",
-    "svelte": "^3.44.0",
-    "svelte-check": "^2.2.6",
-    "svelte-preprocess": "^4.9.4",
+    "socket.io": "^4.4.1",
+    "ts-node": "^10.4.0",
     "tslib": "^2.3.1",
-    "typescript": "^4.4.3"
+    "typescript": "^4.5.4"
   },
   "type": "module",
-  "dependencies": {
-    "socket.io": "^4.4.1",
-    "socket.io-client": "^4.4.1"
-  }
+  "module": "es2020"
 }

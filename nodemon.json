@@ -1,0 +1,13 @@
+{
+  "watch": [
+    "./src/server",
+    "./src/client"
+  ],
+  "ext": "ts,js,svelte",
+  "ignore": [
+    "./build/**",
+    "./src/client/node_modules",
+    "./src/client/.svelte-kit"
+  ],
+  "exec": "npm run build && NODE_ENV=dev node ./build/server/server.js"
+}
