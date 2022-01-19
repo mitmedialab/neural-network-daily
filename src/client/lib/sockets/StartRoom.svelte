@@ -23,6 +23,3 @@
 </script>
 
 <button on:click={startRoom} />
-{#if $room}
-  <h3>{$room}</h3>
-{/if}
