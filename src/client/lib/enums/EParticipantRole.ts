@@ -2,7 +2,8 @@ enum EParticipantRole {
   InputLayer,
   HiddenLayer1,
   HiddenLayer2,
-  OutputLayer
+  OutputLayer,
+  Facilitator,
 }
 
 export default EParticipantRole;

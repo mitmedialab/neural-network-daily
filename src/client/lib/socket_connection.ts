@@ -1,5 +1,5 @@
 import { room } from '$lib/activity_store'
-import { getCurrentValue } from '$lib/store'
+import { getCurrentValue } from '$lib/storeUtility'
 import { socketIO, getSocketUrl } from '$lib/endpoints';
 
 type socketWrapper = {
@@ -25,10 +25,9 @@ export const socket: socketWrapper = {
     }
   },
   startRoom: async function (): Promise<string> {
-    await this.connect();
-
+    return await this.connect();
   },
   joinRoom: async function (roomID: string): Promise<void> {
-    await this.connect();
+    return await this.connect();
   }
 }
