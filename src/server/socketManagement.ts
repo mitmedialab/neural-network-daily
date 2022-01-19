@@ -1,11 +1,12 @@
 import { Server } from 'socket.io';
 import type { Server as httpServer } from 'http'
+import type { Server as httpsServer } from 'https'
 
 import { init as initGuidGenerator, getNext as getNextGuid, release as releaseGuid, init } from './guidGenerator.js';
 import EParticipantRole from '../client/lib/enums/EParticipantRole.js';
 import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from '../client/lib/sockets/socketEvents.js';
 
-function getSocketServer(server: httpServer): Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData> {
+function establishSocketServer(server: httpServer | httpsServer) {
   initGuidGenerator();
   const developmentMode = process.env.NODE_ENV === 'dev';
   const socketServer = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server);
@@ -33,7 +34,6 @@ function getSocketServer(server: httpServer): Server<ClientToServerEvents, Serve
       }
     });
   });
-  return socketServer;
 }
 
-export default getSocketServer;
+export default establishSocketServer;
