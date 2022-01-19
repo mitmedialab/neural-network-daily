@@ -17,6 +17,7 @@
     "connect-livereload": "^0.6.1",
     "express": "^4.17.2",
     "install": "^0.13.0",
+    "jsdoc": "^3.6.7",
     "livereload": "^0.9.3",
     "nodemon": "^2.0.15",
     "npm": "^8.3.1",
