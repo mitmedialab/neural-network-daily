@@ -3,7 +3,7 @@
     "./src/server",
     "./src/client"
   ],
-  "ext": "ts,js,svelte",
+  "ext": "ts,js,svelte,json",
   "ignore": [
     "./build/**",
     "./src/client/node_modules",

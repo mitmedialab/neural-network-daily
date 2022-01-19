@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 import type { Server as httpServer } from 'http'
-import { init as initGuidGenerator, getNext as getNextGuid, release as releaseGuid, init } from './guidGenerator.js';
 
+import { init as initGuidGenerator, getNext as getNextGuid, release as releaseGuid, init } from './guidGenerator.js';
 import EParticipantRole from '../client/lib/enums/EParticipantRole.js';
 import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from '../client/lib/sockets/socketEvents.js';
 
