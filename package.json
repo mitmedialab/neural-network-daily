@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "contours-to-classification-server",
   "version": "0.0.1",
   "scripts": {
     "setup:client": "npm run --prefix src/client/ setup",

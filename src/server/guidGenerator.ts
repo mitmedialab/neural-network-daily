@@ -3,12 +3,19 @@ type guid = string;
 const allCodes: string[] = [];
 const freeIDs: guid[] = [];
 
+/**
+ * 
+ * @param initialGuidCount 
+ */
 export function init(initialGuidCount: number = 500) {
   for (let index = 0; index < initialGuidCount; index++) {
     release(generateGuid());
   }
 }
 
+/**
+ * 
+ */
 export function getNext(): guid {
   if (freeIDs.length > 0) {
     const freeID = freeIDs.pop();
@@ -18,6 +25,10 @@ export function getNext(): guid {
   return generateGuid();
 }
 
+/**
+ * 
+ * @param guid 
+ */
 export function release(guid: guid) {
   freeIDs.push(guid);
 }
