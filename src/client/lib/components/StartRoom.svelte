@@ -7,11 +7,11 @@
 </script>
 
 <script lang="ts">
-  import { io, Socket } from "socket.io-client";
-  import socket from "./socketStore";
+  import socket from "$lib/sockets/socketStore";
   import { room } from "$lib/activity_store";
-  import { onMount } from "svelte";
 
+  const inputMin = 6;
+  const inputMax = 50;
   let roomID;
 
   const startRoom = () => {
@@ -22,4 +22,5 @@
 
 </script>
 
+<input type="range" min={inputMin} max={inputMax} />
 <button on:click={startRoom} />

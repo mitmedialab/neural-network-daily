@@ -25,3 +25,6 @@ export function setUpLiveReloadForDevelopment(app: Express) {
     }, 100);
   });
 }
+
+export const isDevelopmentMode = process.env.NODE_ENV === 'dev';
+export const devConsole: Console | undefined = isDevelopmentMode ? console : undefined;
