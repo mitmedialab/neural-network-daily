@@ -9,10 +9,10 @@ const config = {
 
 	kit: {
 		files: {
-			assets: 'static',
-			lib: 'lib',
-			routes: 'routes',
-			template: 'app.html'
+			assets: './src/static',
+			lib: './src/lib',
+			routes: './src/routes',
+			template: './src/app.html'
 		},
 		adapter: adapter({
 			out: '../../build/client',

@@ -2,15 +2,11 @@ import { Server } from 'socket.io';
 import type { Server as httpServer } from 'http'
 import type { Server as httpsServer } from 'https'
 
-import { devConsole } from './devUtility.js';
-import { init as initGuidGenerator, getNext as getNextGuid, release as releaseGuid, init } from './guidGenerator.js';
-import EParticipantRole from '../client/lib/enums/EParticipantRole.js';
-import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from '../client/lib/sockets/socketEvents.js';
+import { devConsole } from './utils/devUtility.js';
+import { init as initGuidGenerator, getNext as getNextGuid, release as releaseGuid, init } from './utils/guidGenerator.js';
+import EParticipantRole from './shared/enums/EParticipantRole.js';
+import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from './shared/sockets/socketEvents.js';
 
-/**
- * 
- * @param server 
- */
 function establishSocketServer(server: httpServer | httpsServer) {
   initGuidGenerator();
   const socketServer = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server);

@@ -1,6 +1,3 @@
-/**
- * 
- */
 declare var process: {
   env: {
     HOST: number,

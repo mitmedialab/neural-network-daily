@@ -1,7 +1,5 @@
 <script lang="ts">
-	import StartRoom from "$lib/sockets/StartRoom.svelte";
-	import { room } from "$lib/activity_store";
-
+	import StartRoom from "$lib/components/StartRoom.svelte";
 </script>
 
 <h1>Welcome to SvelteKit get you you</h1>

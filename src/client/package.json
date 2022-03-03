@@ -6,7 +6,7 @@
     "copy:package:config": "cp package.json ../../build/client/package.json && cp package-lock.json ../../build/client/package-lock.json",
     "build:production:dependencies": "cd ../../build/client/ && npm ci --production",
     "build:dependencies": "npm run copy:package:config && npm run build:production:dependencies",
-    "build:svelte": "svelte-kit build && npm run build:dependencies",
+    "build": "svelte-kit build && npm run build:dependencies",
     "preview:svelte": "svelte-kit preview",
     "check:svelte": "svelte-check --tsconfig ./tsconfig.json"
   },
@@ -17,6 +17,7 @@
     "@sveltejs/kit": "next",
     "@types/jest": "^27.4.0",
     "jest": "^27.4.7",
+    "p5-svelte": "^3.0.1",
     "svelte": "^3.44.0",
     "svelte-check": "^2.2.6",
     "svelte-preprocess": "^4.9.4",

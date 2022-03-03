@@ -7,10 +7,6 @@ import livereload from 'livereload';
 import connectLivereload from 'connect-livereload';
 import process from './processType.js';
 
-/**
- * 
- * @param app 
- */
 export function setUpLiveReloadForDevelopment(app: Express) {
   if (process.env.NODE_ENV !== 'dev') return;
   app.use(connectLivereload());

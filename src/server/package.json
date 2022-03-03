@@ -1,0 +1,28 @@
+{
+  "name": "contours-to-classification-server",
+  "version": "0.0.1",
+  "scripts": {
+    "setup": "npm install",
+    "build": "./node_modules/.bin/tsc -p ./tsconfig.json && cp -r ./node_modules ../../build/server/",
+    "dev": "npm run build && NODE_ENV=dev node ../../build/server/server.js",
+    "production": "npm run build && NODE_ENV=production node ../../build/server/server.js"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^17.0.8",
+    "connect-livereload": "^0.6.1",
+    "express": "^4.17.2",
+    "install": "^0.13.0",
+    "jsdoc": "^3.6.7",
+    "livereload": "^0.9.3",
+    "nodemon": "^2.0.15",
+    "npm": "^8.3.1",
+    "prettier": "^2.4.1",
+    "socket.io": "^4.4.1",
+    "ts-node": "^10.4.0",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.4"
+  },
+  "type": "module",
+  "module": "es2020"
+}

@@ -2,13 +2,12 @@
   import type {
     ServerToClientEvents,
     ClientToServerEvents,
-  } from "$lib/sockets/socketEvents";
-
+  } from "$lib/shared/sockets/socketEvents";
 </script>
 
 <script lang="ts">
-  import socket from "$lib/sockets/socketStore";
-  import { room } from "$lib/activity_store";
+  import socket from "$lib/socketStore";
+  import { room } from "$lib/activityStore";
 
   const inputMin = 6;
   const inputMax = 50;
@@ -19,7 +18,6 @@
       roomID = id;
     });
   };
-
 </script>
 
 <input type="range" min={inputMin} max={inputMax} />
