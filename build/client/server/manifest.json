@@ -1,0 +1,64 @@
+{
+  ".svelte-kit/build/app.js": {
+    "file": "app.js",
+    "src": ".svelte-kit/build/app.js",
+    "isEntry": true,
+    "imports": [
+      "_index-6a69bd57.js"
+    ]
+  },
+  ".svelte-kit/runtime/components/layout.svelte": {
+    "file": "entries/pages/layout.svelte.js",
+    "src": ".svelte-kit/runtime/components/layout.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index-6a69bd57.js"
+    ]
+  },
+  ".svelte-kit/runtime/components/error.svelte": {
+    "file": "entries/pages/error.svelte.js",
+    "src": ".svelte-kit/runtime/components/error.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index-6a69bd57.js"
+    ]
+  },
+  "src/routes/index.svelte": {
+    "file": "entries/pages/index.svelte.js",
+    "src": "src/routes/index.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index-6a69bd57.js",
+      "_activityStore-12484b66.js"
+    ]
+  },
+  "src/routes/room.svelte": {
+    "file": "entries/pages/room.svelte.js",
+    "src": "src/routes/room.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index-6a69bd57.js",
+      "_activityStore-12484b66.js"
+    ]
+  },
+  "src/routes/test.svelte": {
+    "file": "entries/pages/test.svelte.js",
+    "src": "src/routes/test.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index-6a69bd57.js"
+    ],
+    "css": [
+      "assets/entries/pages/test.svelte-17f6b4c5.css"
+    ]
+  },
+  "_index-6a69bd57.js": {
+    "file": "chunks/index-6a69bd57.js"
+  },
+  "_activityStore-12484b66.js": {
+    "file": "chunks/activityStore-12484b66.js",
+    "imports": [
+      "_index-6a69bd57.js"
+    ]
+  }
+}

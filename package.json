@@ -1,14 +1,25 @@
 {
   "name": "contours-to-classification-server",
   "version": "0.0.1",
+  "dirs": {
+    "client": "./client/"
+  },
+  "server_dir": "./server/",
+  "test_dir": "./tests/",
   "scripts": {
-    "setup": "npm run --prefix src/client/ setup && npm run --prefix src/server/ setup",
-    "build": "rm -rf ./build/ && npm run --prefix src/client/ build && npm run --prefix src/server/ build",
-    "dev": "./node_modules/.bin/nodemon",
-    "production": "npm run build && NODE_ENV=production node ./build/server/server.js"
+    "child": "npm run --prefix $npm_config_dir $npm_config_command",
+    "client": "npm run child --dir=./client/ $npm_config_command",
+    "server": "npm run child --dir=./server/ $npm_config_command",
+    "tests": "npm run child --dir=./tests/ $npm_config_command",
+    "client:server:sequential": "npm run client --command=$npm_config_command && npm run server --command=$npm_config_command",
+    "client:server:parallel": "npm run client --command=$npm_config_command & npm run server --command=$npm_config_command",
+    "setup": "npm run tests --command=setup & npm run client:server:parallel --command=setup",
+    "test": "npm run tests --command=test",
+    "dev": "npm run client:server:parallel --command=dev",
+    "build": "npm run build:client && npm run build:server",
+    "cleanup": "npm run --prefix ./client/ cleanup && npm run --prefix ./server/ cleanup && rm -rf ./build/ "
   },
   "devDependencies": {
-    "nodemon": "^2.0.15",
     "npm": "^8.3.1"
   },
   "type": "module",

@@ -1,0 +1,76 @@
+{
+  ".svelte-kit/runtime/client/start.js": {
+    "file": "start-99917dae.js",
+    "src": ".svelte-kit/runtime/client/start.js",
+    "isEntry": true,
+    "imports": [
+      "_vendor-296f84ed.js"
+    ],
+    "dynamicImports": [
+      ".svelte-kit/runtime/components/layout.svelte",
+      ".svelte-kit/runtime/components/error.svelte",
+      "src/routes/index.svelte",
+      "src/routes/room.svelte",
+      "src/routes/test.svelte"
+    ]
+  },
+  ".svelte-kit/runtime/components/layout.svelte": {
+    "file": "layout.svelte-6f787c63.js",
+    "src": ".svelte-kit/runtime/components/layout.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-296f84ed.js"
+    ]
+  },
+  ".svelte-kit/runtime/components/error.svelte": {
+    "file": "error.svelte-59bd8992.js",
+    "src": ".svelte-kit/runtime/components/error.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-296f84ed.js"
+    ]
+  },
+  "src/routes/index.svelte": {
+    "file": "pages/index.svelte-3f8effcc.js",
+    "src": "src/routes/index.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-296f84ed.js",
+      "_activityStore-cc57f299.js"
+    ]
+  },
+  "src/routes/room.svelte": {
+    "file": "pages/room.svelte-3ebfa97c.js",
+    "src": "src/routes/room.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-296f84ed.js",
+      "_activityStore-cc57f299.js"
+    ]
+  },
+  "src/routes/test.svelte": {
+    "file": "pages/test.svelte-88476ff7.js",
+    "src": "src/routes/test.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-296f84ed.js"
+    ],
+    "css": [
+      "assets/pages/test.svelte-cda4fd2d.css"
+    ]
+  },
+  "_vendor-296f84ed.js": {
+    "file": "chunks/vendor-296f84ed.js"
+  },
+  "_activityStore-cc57f299.js": {
+    "file": "chunks/activityStore-cc57f299.js",
+    "imports": [
+      "_vendor-296f84ed.js"
+    ]
+  }
+}
