@@ -1,4 +1,4 @@
-import { c as create_ssr_component, f as each, b as add_attribute } from "../../chunks/index-6a69bd57.js";
+import { c as create_ssr_component, f as each, b as add_attribute } from "../../chunks/index-49e878d2.js";
 var test_svelte_svelte_type_style_lang = "";
 const css = {
   code: '.container.svelte-1bwp131{display:grid;width:100vw;height:100vh;vertical-align:top;padding:0px;border:none}.crossed.svelte-1bwp131{position:relative;background-color:transparent}.crossed.svelte-1bwp131:before{content:"";position:absolute;left:0;right:0;top:1px;bottom:1px;border-width:100px;border-style:solid;border-color:black transparent}.crossed.svelte-1bwp131:after{content:"";position:absolute;left:1px;right:1px;top:0;bottom:0;border-width:0;border-style:solid;border-color:transparent transparent}',

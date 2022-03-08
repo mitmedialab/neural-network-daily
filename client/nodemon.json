@@ -1,0 +1,12 @@
+{
+  "watch": [
+    "./src/"
+  ],
+  "ext": "svelte,ts,js,json",
+  "ignore": [
+    "./src/.gitignore",
+    "./node_modules/*",
+    "./.svelte-kit/*"
+  ],
+  "exec": "npm run build:svelte"
+}

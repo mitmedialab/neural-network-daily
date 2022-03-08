@@ -20,6 +20,6 @@
   };
 </script>
 
-<div>Nope</div>
+<div>Nope you no't</div>
 <input type="range" min={inputMin} max={inputMax} />
 <button on:click={startRoom} />

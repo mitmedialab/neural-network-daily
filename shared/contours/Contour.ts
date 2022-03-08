@@ -1,6 +1,4 @@
-import type IEquatable from "$lib/common/IEquatable";
-import type ISimpleNode from "$lib/graph/types/ISimpleNode"
-import type TIndexInNode from "$lib/graph/types/TIndexInNode";
+import type IEquatable from "../common/IEquatable";
 
 export type TContourInfo = IEquatable<TContourInfo> & {
   authoringNode: Readonly<ISimpleNode>;

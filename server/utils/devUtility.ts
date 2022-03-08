@@ -18,7 +18,7 @@ export function setUpLiveReloadForDevelopment(app: Express) {
   liveReloadServer.server.once("connection", () => {
     setTimeout(() => {
       liveReloadServer.refresh("/");
-    }, 100);
+    }, 20);
   });
 }
 

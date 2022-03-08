@@ -1,10 +1,10 @@
-import EParticipantRole from "../../enums/EParticipantRole";
-import IEquatable from "../../common/IEquatable";
+import EParticipantRole from "../enums/EParticipantRole"
+import IEquatable from "../common/IEquatable"
 
 /**
  * Information about a student acting as a node in the C2C network
  */
-type TParticipantInfo = {
+export type TParticipantInfo = {
   name: string;
   room: string;
 }
@@ -12,7 +12,7 @@ type TParticipantInfo = {
 /**
  * Information about where a C2C node fits into the network
  */
-type TLayerInfo = {
+export type TLayerInfo = {
   layer: EParticipantRole;
   indexWithinLayer: number;
 }
@@ -23,7 +23,7 @@ type TLayerInfo = {
  * This is because hidden_layer_1 node's will only use 1 item of data (a contour) from each input node. 
  * This set up allows us to ensure the client can discriminate which data it should care about without needng to keep track of state on the server. 
  */
-type TDataPacket<TData> = {
+export type TDataPacket<TData> = {
   info: TLayerInfo;
   data: TData[];
 }
@@ -31,14 +31,14 @@ type TDataPacket<TData> = {
 /**
  * 
  */
-type TDataInfo = {
+export type TDataInfo = {
   indexWithinDataPacket: number;
 }
 
 /**
  * 
  */
-type TConnectionInfo = TDataInfo & TLayerInfo;
+export type TConnectionInfo = TDataInfo & TLayerInfo;
 
 /**
  * Somewhat-generic concept of a node in a network that receives input and 'sends' output.
@@ -47,16 +47,16 @@ type TConnectionInfo = TDataInfo & TLayerInfo;
 type TNode<TInput, TOutput> = {
   outputSize: number;
   inputSize: number;
-  input: TInput[];
-  output: TOutput[];
-  connectedInputInfo: TLayerInfo[];
-  trySetInput(packet: TDataPacket<TInput>);
+  input: (TInput | undefined)[];
+  output: (TOutput | undefined)[];
+  connectedInputInfo: (TConnectionInfo[] | undefined);
+  trySetInput(packet: TDataPacket<TInput>): void;
   /** Get all output from this node */
   getOuput(): TDataPacket<TOutput>;
   /** Set a single entry in the node's ouput */
-  setOutput(index: number, entry: TOutput);
+  setOutput(index: number, entry: TOutput): void;
   /**  */
-  clear();
+  clear(): void;
   ready(): boolean;
 }
 
@@ -64,9 +64,9 @@ class C2CNode<TInput, TOutput>
   implements TNode<TInput, TOutput>, TLayerInfo, IEquatable<TLayerInfo>, TParticipantInfo {
   outputSize: number;
   inputSize: number;
-  input: TInput[];
-  output: TOutput[];
-  connectedInputInfo: TConnectionInfo[];
+  input: (TInput | undefined)[];
+  output: (TOutput | undefined)[];
+  connectedInputInfo: (TConnectionInfo[] | undefined);
   layer: EParticipantRole;
   indexWithinLayer: number;
   name: string;
@@ -75,8 +75,8 @@ class C2CNode<TInput, TOutput>
   equals(other: TLayerInfo): boolean {
     return other.layer === this.layer && other.indexWithinLayer === this.indexWithinLayer
   };
-  trySetInput(packet: TDataPacket<TInput>) {
-    this.connectedInputInfo.forEach((info, index) => {
+  trySetInput(packet: TDataPacket<TInput>): void {
+    this.connectedInputInfo?.forEach((info, index) => {
       if (this.equals(packet.info)) {
         this.input[index] = packet.data[info.indexWithinDataPacket];
         return;
@@ -84,24 +84,35 @@ class C2CNode<TInput, TOutput>
     })
   }
   getOuput(): TDataPacket<TOutput> {
-    return { info: { layer: this.layer, indexWithinLayer: this.layer }, data: this.output }
+    if (this.output.includes(undefined)) { throw new Error("Output is undefined!") };
+    return { info: { layer: this.layer, indexWithinLayer: this.layer }, data: this.output as TOutput[] }
   }
-  setOutput(index: number, entry: TOutput) {
+  setOutput(index: number, entry: TOutput): void {
     this.output[index] = entry;
   }
-  clear() {
-    this.input.fill(undefined);
-    this.output.fill(undefined);
+  clear(): void {
+    this.input?.fill(undefined);
+    this.output?.fill(undefined);
   }
   ready(): boolean {
     return this.input.every(entry => entry !== undefined);
   }
 
-  constructor(inputSize: number,
+  constructor(participantInfo: TParticipantInfo,
+    layerInfo: TLayerInfo,
+    inputSize: number,
     outputSize: number,
-    connectedInputs: TConnectionInfo[]) {
-    this.input = new Array<TInput>(inputSize);
-    this.output = new Array<TOutput>(outputSize);
+    connectedInputs: TConnectionInfo[] | undefined) {
+    this.room = participantInfo.room;
+    this.name = participantInfo.name;
+    this.layer = layerInfo.layer;
+    this.indexWithinLayer = layerInfo.indexWithinLayer;
+    this.inputSize = inputSize;
+    this.outputSize = outputSize;
+    this.input = new Array<TInput | undefined>(inputSize);
+    this.output = new Array<TOutput | undefined>(outputSize);
     this.connectedInputInfo = connectedInputs;
   }
 }
+
+export default C2CNode;

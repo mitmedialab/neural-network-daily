@@ -4,7 +4,7 @@
     "src": ".svelte-kit/build/app.js",
     "isEntry": true,
     "imports": [
-      "_index-6a69bd57.js"
+      "_index-49e878d2.js"
     ]
   },
   ".svelte-kit/runtime/components/layout.svelte": {
@@ -12,7 +12,7 @@
     "src": ".svelte-kit/runtime/components/layout.svelte",
     "isEntry": true,
     "imports": [
-      "_index-6a69bd57.js"
+      "_index-49e878d2.js"
     ]
   },
   ".svelte-kit/runtime/components/error.svelte": {
@@ -20,7 +20,7 @@
     "src": ".svelte-kit/runtime/components/error.svelte",
     "isEntry": true,
     "imports": [
-      "_index-6a69bd57.js"
+      "_index-49e878d2.js"
     ]
   },
   "src/routes/index.svelte": {
@@ -28,17 +28,20 @@
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "imports": [
-      "_index-6a69bd57.js",
-      "_activityStore-12484b66.js"
+      "_index-49e878d2.js",
+      "_activityStore-e6e45800.js"
     ]
   },
-  "src/routes/room.svelte": {
-    "file": "entries/pages/room.svelte.js",
-    "src": "src/routes/room.svelte",
+  "src/routes/room-[id]-[capacity].svelte": {
+    "file": "entries/pages/room-_id_-_capacity_.svelte.js",
+    "src": "src/routes/room-[id]-[capacity].svelte",
     "isEntry": true,
     "imports": [
-      "_index-6a69bd57.js",
-      "_activityStore-12484b66.js"
+      "_index-49e878d2.js",
+      "_activityStore-e6e45800.js"
+    ],
+    "css": [
+      "assets/entries/pages/room-_id_-_capacity_.svelte-a263add3.css"
     ]
   },
   "src/routes/test.svelte": {
@@ -46,19 +49,19 @@
     "src": "src/routes/test.svelte",
     "isEntry": true,
     "imports": [
-      "_index-6a69bd57.js"
+      "_index-49e878d2.js"
     ],
     "css": [
       "assets/entries/pages/test.svelte-17f6b4c5.css"
     ]
   },
-  "_index-6a69bd57.js": {
-    "file": "chunks/index-6a69bd57.js"
+  "_index-49e878d2.js": {
+    "file": "chunks/index-49e878d2.js"
   },
-  "_activityStore-12484b66.js": {
-    "file": "chunks/activityStore-12484b66.js",
+  "_activityStore-e6e45800.js": {
+    "file": "chunks/activityStore-e6e45800.js",
     "imports": [
-      "_index-6a69bd57.js"
+      "_index-49e878d2.js"
     ]
   }
 }

@@ -1,107 +1,139 @@
-import type TNode from "$lib/graph/AbstractParticipantNodeactParticipantNode";
-import type { TNodeInfo } from "$lib/graph/AbstractParticipantNodeactParticipantNode";
-import type TInputLayerData from "$lib/layer_data_types/TInputLayerData";
-import type TFirstHiddenLayerData from "$lib/layer_data_types/TFirstHiddenLayerData";
-import type TSecondHiddenLayerData from "$lib/layer_data_types/TSecondHiddenLayerData";
-import type TOuputLayerData from "$lib/layer_data_types/TOuputLayerData";
-import type TNetwork from "./TNetwork";
+import EParticipantRole from "../enums/EParticipantRole";
+import C2CNode, { TConnectionInfo, TLayerInfo, TParticipantInfo, TDataInfo } from "./C2CNode";
+import { Capacity10, Capacity11, Capacity12, Capacity6, Capacity7, Capacity8, Capacity9, TGraphConfig, TLayerConfig } from "./graphConfigs"
 
-const defaultInfo: TNodeInfo = {
-  id: undefined,
-  name: undefined,
-  index: -1,
-  connectedInputIndices: undefined,
-  connectedOutputIndices: undefined,
-}
 
-class Network implements TNetwork {
-  InputLayer: TNode<TInputLayerData>[];
-  FirstHiddenLayer: TNode<TFirstHiddenLayerData>[];
-  SecondHiddenLayer: TNode<TSecondHiddenLayerData>[];
-  OutputLayer: TNode<TOuputLayerData>[];
-}
+class GraphFactory {
+  layers: EParticipantRole[];
+  configs: Record<number, TGraphConfig>;
 
-export const defaultInputLayerNode: TNode<TInputLayerData> = {
-  ...defaultInfo,
-  currentData: undefined
-}
-
-export const defaultFirstHiddenLayerNode: TNode<TFirstHiddenLayerData> = {
-  ...defaultInfo,
-  currentData: undefined
-}
-
-export const defaultSecondHiddenLayerNode: TNode<TSecondHiddenLayerData> = {
-  ...defaultInfo,
-  currentData: undefined
-}
-
-export const defaultOutputLayerNode: TNode<TOuputLayerData> = {
-  ...defaultInfo,
-  currentData: undefined
-}
-
-export function buildNetwork(nodeCount: number): TNetwork {
-  if (nodeCount == 6) {
-    const network = buildNetwork(4, undefined, 1, 1, true);
-    return network;
-  }
-
-  if (nodeCount == 7) {
-
-  }
-
-  if (nodeCount == 8) {
-
-  }
-
-  if (nodeCount == 9) {
-
-  }
-
-  if (nodeCount == 10) {
-    return buildNetwork(4, 4, 1, 1, true);
-  }
-
-  function buildNetwork(inputLayer: number, firstHiddenLayer: number | undefined, secondHiddenLayer: number, outputLayer: number, fullyConnected: boolean): TNetwork {
-    const shape: number[] = [];
-    shape.push(inputLayer);
-    pushIfDefined(shape, firstHiddenLayer);
-    shape.push(secondHiddenLayer);
-    shape.push(outputLayer);
-
-    const network: TNetwork = {
-      InputLayer: Array(inputLayer).fill(defaultInputLayerNode),
-      FirstHiddenLayer: firstHiddenLayer ? Array(firstHiddenLayer).fill(defaultFirstHiddenLayerNode) : undefined,
-      SecondHiddenLayer: Array(secondHiddenLayer).fill(defaultSecondHiddenLayerNode),
-      OutputLayer: Array(outputLayer).fill(defaultOutputLayerNode),
+  constructor() {
+    this.layers = [
+      EParticipantRole.InputLayer,
+      EParticipantRole.HiddenLayer1,
+      EParticipantRole.HiddenLayer2,
+      EParticipantRole.OutputLayer];
+    this.configs = {
+      6: new Capacity6(),
+      7: new Capacity7(),
+      8: new Capacity8(),
+      9: new Capacity9(),
+      10: new Capacity10(),
+      11: new Capacity11(),
+      12: new Capacity12(),
     };
+  }
 
-    if (fullyConnected) {
-      network.InputLayer.forEach((node: TNode<TInputLayerData>) => {
-        node.connectedInputIndices = undefined;
-        node.connectedOutputIndices = getIncrementingArray(shape[1]);
-      })
+  getConfig(graphCapacity: number): TGraphConfig {
+    if (!(graphCapacity in this.configs)) throw new Error(`Unsupported capacity: ${graphCapacity}`);
+    return this.configs[graphCapacity];
+  }
 
-      network.FirstHiddenLayer?.forEach((node: TNode<TFirstHiddenLayerData>) => {
-        node.connectedInputIndices = getIncrementingArray(shape[0]);
-        node.connectedOutputIndices = getIncrementingArray(shape[2]);
-      });
+  getNodeInfoAtPosition(graphConfig: TGraphConfig, globalIndex: number): TLayerInfo {
+    let runningCount = 0;
+    for (let layerIndex = 0; layerIndex <= this.layers.length - 1; layerIndex++) {
+      const layer: EParticipantRole = this.layers[layerIndex];
+      const layerConfig: TLayerConfig | undefined = graphConfig[layer];
+      if (layerConfig === undefined) continue;
 
-      network.SecondHiddenLayer?.forEach((node: TNode<TFirstHiddenLayerData>) => {
-        const prevIndex: number = firstHiddenLayer ? 1 : 0;
-        const nextIndex: number = firstHiddenLayer ? 3 : 2;
-        node.connectedInputIndices = getIncrementingArray(shape[prevIndex]);
-        node.connectedOutputIndices = getIncrementingArray(shape[nextIndex]);
-      });
+      const { nodeCount }: TLayerConfig = layerConfig;
+      const lowerBound = runningCount;
+      const upperBound = runningCount += nodeCount;
+      if (globalIndex >= upperBound) continue;
+      return { layer: layerIndex, indexWithinLayer: globalIndex - lowerBound };
     }
 
-    return network;
+    throw new Error("Could not identify node position");
   }
 
-  function pushIfDefined<T>(arr: T[], item: T): void {
-    if (item) arr.push(item);
+  getPreviousLayer(graphConfig: TGraphConfig, info: TLayerInfo): EParticipantRole {
+    const queryLayerIndex = this.layers.indexOf(info.layer);
+    if (queryLayerIndex <= 0) throw new Error(`No previous layer for layer for ${info.layer}`);
+    for (let layerIndex = queryLayerIndex - 1; layerIndex >= 0; layerIndex--) {
+      const layer: EParticipantRole = this.layers[layerIndex];
+      if (graphConfig[layer] !== undefined) {
+        return layer;
+      }
+    }
+    throw new Error("Could not identify layer");
   }
 
-  const getIncrementingArray = (count: number): number[] => [...Array(count).keys()];
+  buildNodeForGraph
+    <TInput, TOutput>(
+      graphConfig: TGraphConfig,
+      globalIndex: number,
+      participantInfo: TParticipantInfo = { name: "defaultName", room: "defaultRoom" }):
+    C2CNode<TInput, TOutput> {
+    if (globalIndex > graphConfig.capacity - 1) throw new Error(`Invalid index: index ${globalIndex} for capacity ${graphConfig.capacity}`)
+
+    const nodeInfo = this.getNodeInfoAtPosition(graphConfig, globalIndex);
+    const layerInfo = graphConfig[nodeInfo.layer];
+    if (layerInfo === undefined) throw new Error(`No information on node's layer: ${nodeInfo.layer}`);
+
+    let inputSize: number;
+    let connections: TConnectionInfo[] | undefined;
+    if (nodeInfo.layer !== EParticipantRole.InputLayer) {
+      const previousLayer = this.getPreviousLayer(graphConfig, nodeInfo);
+      const previousLayerInfo = graphConfig[previousLayer];
+      if (previousLayerInfo === undefined) throw new Error(`No information on previous layer ${previousLayer}`);
+      if (!(nodeInfo.indexWithinLayer < previousLayerInfo.outputsPerNode)) {
+        throw new Error(`Not enough outputs in layer ${previousLayer} to connect with node ${nodeInfo.indexWithinLayer} within layer ${nodeInfo.layer}`)
+      };
+      inputSize = previousLayerInfo.nodeCount;
+      connections = [...Array(inputSize).keys()].map<TConnectionInfo>(index => {
+        const layerInfo: TLayerInfo = { layer: previousLayer, indexWithinLayer: index };
+        const dataInfo: TDataInfo = { indexWithinDataPacket: nodeInfo.indexWithinLayer };
+        return { ...layerInfo, ...dataInfo };
+      });
+    } else {
+      inputSize = 0;
+      connections = undefined;
+    }
+
+    // Assumption is that each node is fully connected to the previous layer
+    const outputSize = layerInfo.outputsPerNode;
+
+    return new C2CNode<TInput, TOutput>(participantInfo, nodeInfo, inputSize, outputSize, connections);
+  }
+
+  addToGraph<TInput, TOutput>(
+    graph: Map<EParticipantRole, C2CNode<TInput, TOutput>[]>,
+    graphConfig: TGraphConfig,
+    layer: EParticipantRole,
+    alreadyAdded: number): number {
+    if (graphConfig[layer] === undefined) return 0;
+    const { nodeCount } = graphConfig[layer] as TLayerConfig;
+
+    for (let i = 0; i < nodeCount; i++) {
+      const globalIndex = alreadyAdded + i;
+      const node = this.buildNodeForGraph<TInput, TOutput>(graphConfig, globalIndex);
+      if (graph.has(layer)) {
+        graph.get(layer)?.push(node);
+      } else {
+        graph.set(layer, [node]);
+      }
+    }
+    return nodeCount;
+  }
+
+  buildGraph
+    <TInputLayerOutput, THiddenLayer1Output, THiddenLayer2Output, TOutputLayerOuput>
+    (graphConfig: TGraphConfig)
+    : Map<EParticipantRole, C2CNode<TInputLayerOutput | THiddenLayer1Output | THiddenLayer2Output, TInputLayerOutput | THiddenLayer1Output | THiddenLayer2Output | TOutputLayerOuput>[]> {
+    type TPotentialInputs = TInputLayerOutput | THiddenLayer1Output | THiddenLayer2Output;
+    type TPotentialOutputs = TInputLayerOutput | THiddenLayer1Output | THiddenLayer2Output | TOutputLayerOuput;
+    type TNodeType = C2CNode<TPotentialInputs, TPotentialOutputs>;
+    const map: Map<EParticipantRole, TNodeType[]> = new Map<EParticipantRole, TNodeType[]>();
+
+    let nodeCount = 0;
+    nodeCount += this.addToGraph(map, graphConfig, EParticipantRole.InputLayer, nodeCount);
+    nodeCount += this.addToGraph(map, graphConfig, EParticipantRole.HiddenLayer1, nodeCount);
+    nodeCount += this.addToGraph(map, graphConfig, EParticipantRole.HiddenLayer2, nodeCount);
+    nodeCount += this.addToGraph(map, graphConfig, EParticipantRole.OutputLayer, nodeCount);
+
+    if (nodeCount != graphConfig.capacity) throw new Error(`Number of nodes added (${nodeCount}) did not match graph's capacity (${graphConfig.capacity})`);
+    return map;
+  }
 }
+
+export default GraphFactory;

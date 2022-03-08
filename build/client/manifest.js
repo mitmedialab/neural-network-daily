@@ -3,7 +3,7 @@ export const manifest = {
 	assets: new Set([]),
 	_: {
 		mime: {},
-		entry: {"file":"start-99917dae.js","js":["start-99917dae.js","chunks/vendor-296f84ed.js"],"css":[]},
+		entry: {"file":"start-b22b4075.js","js":["start-b22b4075.js","chunks/vendor-1e2862c8.js"],"css":[]},
 		nodes: [
 			() => import('./server/nodes/0.js'),
 			() => import('./server/nodes/1.js'),
@@ -22,9 +22,9 @@ export const manifest = {
 			},
 			{
 				type: 'page',
-				pattern: /^\/room\/?$/,
-				params: null,
-				path: "/room",
+				pattern: /^\/room-([^/]+?)-([^/]+?)\/?$/,
+				params: (m) => ({ id: m[1], capacity: m[2]}),
+				path: null,
 				a: [0,3],
 				b: [1]
 			},

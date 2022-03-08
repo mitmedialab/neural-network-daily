@@ -7,6 +7,8 @@ import { init as initGuidGenerator, getNext as getNextGuid, release as releaseGu
 import EParticipantRole from './shared/enums/EParticipantRole.js';
 import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from './shared/sockets/socketEvents.js';
 
+const validRoomIDs: string[] = [];
+
 function establishSocketServer(server: httpServer | httpsServer) {
   initGuidGenerator();
   const socketServer = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server);
@@ -18,6 +20,8 @@ function establishSocketServer(server: httpServer | httpsServer) {
       const roomID: string = getNextGuid();
       socket.data.roomID = roomID;
       socket.data.participantRole = EParticipantRole.Facilitator;
+      socket.join(roomID);
+      validRoomIDs.push(roomID);
       callback(roomID);
       devConsole?.log(`Open new room: ${roomID}, with capacity: ${capacity}`);
     });
@@ -26,6 +30,7 @@ function establishSocketServer(server: httpServer | httpsServer) {
       const participantRole: EParticipantRole = EParticipantRole.HiddenLayer1;
       socket.data.roomID = roomID;
       socket.data.participantRole = participantRole;
+      socket.join(roomID);
       callback(participantRole);
       devConsole?.log(`Socket joined room: ${roomID}, as a: ${participantRole}`)
     });

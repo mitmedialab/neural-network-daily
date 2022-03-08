@@ -16,7 +16,7 @@ export function setUpLiveReloadForDevelopment(app) {
     liveReloadServer.server.once("connection", () => {
         setTimeout(() => {
             liveReloadServer.refresh("/");
-        }, 100);
+        }, 20);
     });
 }
 export const isDevelopmentMode = process.env.NODE_ENV === 'dev';

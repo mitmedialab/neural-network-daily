@@ -1,6 +1,6 @@
-import { c as create_ssr_component, a as subscribe, b as add_attribute, v as validate_component } from "../../chunks/index-6a69bd57.js";
+import { c as create_ssr_component, a as subscribe, b as add_attribute, v as validate_component } from "../../chunks/index-49e878d2.js";
 import { io } from "socket.io-client";
-import { r as readable } from "../../chunks/activityStore-12484b66.js";
+import { r as readable } from "../../chunks/activityStore-e6e45800.js";
 const socket = readable(io());
 const inputMin = 6;
 const inputMax = 50;
@@ -8,7 +8,7 @@ const StartRoom = create_ssr_component(($$result, $$props, $$bindings, slots) =>
   let $$unsubscribe_socket;
   $$unsubscribe_socket = subscribe(socket, (value) => value);
   $$unsubscribe_socket();
-  return `<div>Nope</div>
+  return `<div>Nope you no&#39;t</div>
 <input type="${"range"}"${add_attribute("min", inputMin, 0)}${add_attribute("max", inputMax, 0)}>
 <button></button>`;
 });

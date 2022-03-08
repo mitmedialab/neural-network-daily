@@ -1,22 +1,15 @@
 {
-  "name": "contours-to-classification-server",
+  "name": "contours-to-classification-base",
   "version": "0.0.1",
-  "dirs": {
-    "client": "./client/"
-  },
-  "server_dir": "./server/",
-  "test_dir": "./tests/",
   "scripts": {
-    "child": "npm run --prefix $npm_config_dir $npm_config_command",
-    "client": "npm run child --dir=./client/ $npm_config_command",
-    "server": "npm run child --dir=./server/ $npm_config_command",
-    "tests": "npm run child --dir=./tests/ $npm_config_command",
-    "client:server:sequential": "npm run client --command=$npm_config_command && npm run server --command=$npm_config_command",
-    "client:server:parallel": "npm run client --command=$npm_config_command & npm run server --command=$npm_config_command",
-    "setup": "npm run tests --command=setup & npm run client:server:parallel --command=setup",
-    "test": "npm run tests --command=test",
-    "dev": "npm run client:server:parallel --command=dev",
-    "build": "npm run build:client && npm run build:server",
+    "child": "npm run --prefix $npm_config_dir",
+    "client": "npm run child --dir=./client/",
+    "server": "npm run child --dir=./server/",
+    "tests": "npm run child --dir=./tests/",
+    "setup": "npm run tests setup && npm run client setup && npm run server setup",
+    "test": "npm run tests test",
+    "dev": "npm run client dev & npm run server dev",
+    "build": "npm run server build && npm run client build",
     "cleanup": "npm run --prefix ./client/ cleanup && npm run --prefix ./server/ cleanup && rm -rf ./build/ "
   },
   "devDependencies": {
