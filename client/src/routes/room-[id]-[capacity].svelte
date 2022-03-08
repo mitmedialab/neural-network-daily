@@ -3,12 +3,9 @@
   import { graphFactory, room } from "$lib/activityStore";
   import type EParticipantRole from "$lib/shared/enums/EParticipantRole";
   import type C2CNode from "$lib/shared/graph/C2CNode";
-  import {
-    getLayerConfigCollection,
-    getLayerConfigMap,
+  import type {
     TGraphConfig,
     TLayerConfig,
-    TLayerMap,
   } from "$lib/shared/graph/graphConfigs";
   import { onMount } from "svelte";
 
@@ -23,8 +20,8 @@
   let graphConfig: TGraphConfig;
   $: graphConfig = $graphFactory.getConfig(parseInt(capacity));
 
-  let layerMap: TLayerMap;
-  $: layerMap = getLayerConfigMap(graphConfig);
+  let layerMap: Map<EParticipantRole, TLayerConfig>;
+  $: layerMap = $graphFactory.getLayerConfigMap(graphConfig);
 
   let graph: Map<EParticipantRole, C2CNode<number, number>[]>;
   $: graph = $graphFactory.buildGraph<number, number, number, number>(
@@ -32,15 +29,17 @@
   );
 
   let elements: { [k in EParticipantRole]?: HTMLDivElement[] };
-  $: elements = Object.keys(layerMap).reduce((obj, element) => {
+  $: elements = [...layerMap].reduce((obj, [type, layerConfig]) => {
     const updated = { ...obj };
-    updated[element] = Array<HTMLDivElement>(layerMap[element].nodeCount);
+    updated[type] = Array<HTMLDivElement>(layerConfig.nodeCount);
     return updated;
   }, {});
 
   const getColumnCss = (column: number) => `grid-column: ${column}`;
 
-  onMount(() => {});
+  onMount(() => {
+    console.log(elements);
+  });
 </script>
 
 <style>
@@ -73,7 +72,7 @@
 </style>
 
 <div>
-  {#each Object.entries(layerMap) as [type, layerConfig], layerIndex}
+  {#each [...layerMap] as [type, layerConfig], layerIndex}
     <div class:column>
       {#each Array(layerConfig.nodeCount) as _, nodeIndex}
         <div

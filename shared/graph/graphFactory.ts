@@ -29,6 +29,12 @@ class GraphFactory {
     return this.configs[graphCapacity];
   }
 
+  getLayerConfigMap(config: TGraphConfig): Map<EParticipantRole, TLayerConfig> {
+    const map: Map<EParticipantRole, TLayerConfig> = new Map<EParticipantRole, TLayerConfig>();
+    this.layers.filter(value => config[value] !== undefined).forEach(value => map.set(value, config[value]));
+    return map;
+  }
+
   getNodeInfoAtPosition(graphConfig: TGraphConfig, globalIndex: number): TLayerInfo {
     let runningCount = 0;
     for (let layerIndex = 0; layerIndex <= this.layers.length - 1; layerIndex++) {

@@ -10,50 +10,6 @@ export type TGraphConfig = Record<EParticipantRole, TLayerConfig | undefined> & 
   depth: number;
 };
 
-export type TLayerMap = { [key in EParticipantRole]?: TLayerConfig };
-
-function pushIfDefined<T>(arr: T[], item: T): boolean {
-  if (item !== undefined) {
-    arr.push(item);
-    return true;
-  }
-  return false;
-}
-
-function enterIfDefined<TKey extends string | number | symbol, TItem>(obj: { [key in TKey]?: TItem }, key: TKey, item: TItem): boolean {
-  if (item !== undefined) {
-    obj[key] = item;
-    return true;
-  }
-  return false;
-}
-
-const addLayerIfDefined = (container: TLayerConfig[] | TLayerMap, config: TGraphConfig, layer: EParticipantRole): boolean => {
-  if (Array.isArray(container)) {
-    return pushIfDefined(container, config[layer])
-  } else {
-    return enterIfDefined(container, layer, config[layer]);
-  }
-};
-
-export function getLayerConfigCollection(config: TGraphConfig): TLayerConfig[] {
-  const layers: TLayerConfig[] = [];
-  addLayerIfDefined(layers, config, EParticipantRole.InputLayer);
-  addLayerIfDefined(layers, config, EParticipantRole.HiddenLayer1);
-  addLayerIfDefined(layers, config, EParticipantRole.HiddenLayer2);
-  addLayerIfDefined(layers, config, EParticipantRole.OutputLayer);
-  return layers;
-};
-
-export function getLayerConfigMap(config: TGraphConfig): { [key in EParticipantRole]?: TLayerConfig } {
-  const map: { [key in EParticipantRole]?: TLayerConfig } = {};
-  addLayerIfDefined(map, config, EParticipantRole.InputLayer);
-  addLayerIfDefined(map, config, EParticipantRole.HiddenLayer1);
-  addLayerIfDefined(map, config, EParticipantRole.HiddenLayer2);
-  addLayerIfDefined(map, config, EParticipantRole.OutputLayer);
-  return map;
-}
-
 abstract class BaseConfig implements TGraphConfig {
   abstract capacity: number;
   abstract depth: number;
@@ -98,40 +54,84 @@ export class Capacity7 extends BaseConfig {
 export class Capacity8 extends BaseConfig {
   capacity = 8;
   depth = 4;
-  [EParticipantRole.InputLayer] = undefined;
-  [EParticipantRole.HiddenLayer1] = undefined;
-  [EParticipantRole.HiddenLayer2] = undefined;
-
+  [EParticipantRole.InputLayer] = {
+    nodeCount: 4,
+    outputsPerNode: 2,
+  };
+  [EParticipantRole.HiddenLayer1] = {
+    nodeCount: 4,
+    outputsPerNode: 3,
+  };
+  [EParticipantRole.HiddenLayer2] = {
+    nodeCount: 1,
+    outputsPerNode: 4,
+  };
 }
 
 export class Capacity9 extends BaseConfig {
   capacity = 9;
   depth = 4;
-  [EParticipantRole.InputLayer] = undefined;
-  [EParticipantRole.HiddenLayer1] = undefined;
-  [EParticipantRole.HiddenLayer2] = undefined;
+  [EParticipantRole.InputLayer] = {
+    nodeCount: 4,
+    outputsPerNode: 3,
+  };
+  [EParticipantRole.HiddenLayer1] = {
+    nodeCount: 3,
+    outputsPerNode: 2,
+  };
+  [EParticipantRole.HiddenLayer2] = {
+    nodeCount: 1,
+    outputsPerNode: 4,
+  };
 }
 
 export class Capacity10 extends BaseConfig {
   capacity = 10;
   depth = 4;
-  [EParticipantRole.InputLayer] = undefined;
-  [EParticipantRole.HiddenLayer1] = undefined;
-  [EParticipantRole.HiddenLayer2] = undefined;
+  [EParticipantRole.InputLayer] = {
+    nodeCount: 4,
+    outputsPerNode: 4,
+  };
+  [EParticipantRole.HiddenLayer1] = {
+    nodeCount: 4,
+    outputsPerNode: 2,
+  };
+  [EParticipantRole.HiddenLayer2] = {
+    nodeCount: 1,
+    outputsPerNode: 4,
+  };
 }
 
 export class Capacity11 extends BaseConfig {
   capacity = 11;
   depth = 4;
-  [EParticipantRole.InputLayer] = undefined;
-  [EParticipantRole.HiddenLayer1] = undefined;
-  [EParticipantRole.HiddenLayer2] = undefined;
+  [EParticipantRole.InputLayer] = {
+    nodeCount: 5,
+    outputsPerNode: 4,
+  };
+  [EParticipantRole.HiddenLayer1] = {
+    nodeCount: 4,
+    outputsPerNode: 2,
+  };
+  [EParticipantRole.HiddenLayer2] = {
+    nodeCount: 1,
+    outputsPerNode: 4,
+  };
 }
 
 export class Capacity12 extends BaseConfig {
   capacity = 12;
   depth = 4;
-  [EParticipantRole.InputLayer] = undefined;
-  [EParticipantRole.HiddenLayer1] = undefined;
-  [EParticipantRole.HiddenLayer2] = undefined;
+  [EParticipantRole.InputLayer] = {
+    nodeCount: 6,
+    outputsPerNode: 4,
+  };
+  [EParticipantRole.HiddenLayer1] = {
+    nodeCount: 4,
+    outputsPerNode: 2,
+  };
+  [EParticipantRole.HiddenLayer2] = {
+    nodeCount: 1,
+    outputsPerNode: 4,
+  };
 }
