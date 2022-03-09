@@ -59,7 +59,7 @@ export class Capacity8 extends BaseConfig {
     outputsPerNode: 2,
   };
   [EParticipantRole.HiddenLayer1] = {
-    nodeCount: 4,
+    nodeCount: 2,
     outputsPerNode: 3,
   };
   [EParticipantRole.HiddenLayer2] = {

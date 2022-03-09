@@ -1,5 +1,5 @@
 import nameOf, { _function } from "nameOfUtility";
-import { TGraphConfig } from "shared/graph/graphConfigs";
+import { TGraphConfig, TLayerConfig } from "shared/graph/graphConfigs";
 import EParticipantRole from "./shared/enums/EParticipantRole";
 import { TLayerInfo } from "./shared/graph/C2CNode";
 import GraphFactory from "./shared/graph/GraphFactory"
@@ -30,9 +30,13 @@ describe("Graph Factory Tests", () => {
     expect(() => factory.getPreviousLayer(six, input)).toThrowError();
     expect(factory.getPreviousLayer(six, hidden)).toBe(EParticipantRole.InputLayer);
     expect(factory.getPreviousLayer(six, output)).toBe(EParticipantRole.HiddenLayer1);
-  })
+  });
 
   test(nameOf(GraphFactory, _function, "buildNodeForGraph"), () => {
     console.log(factory.buildNodeForGraph(six, 5));
+  });
+
+  test(nameOf(GraphFactory, _function, "getLayerConfigMap"), () => {
+    const map: Map<EParticipantRole, TLayerConfig> = factory.getLayerConfigMap(six);
   });
 })

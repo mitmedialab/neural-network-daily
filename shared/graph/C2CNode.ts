@@ -1,5 +1,5 @@
-import EParticipantRole from "../enums/EParticipantRole"
-import IEquatable from "../common/IEquatable"
+import type EParticipantRole from "../enums/EParticipantRole";
+import type IEquatable from "../common/IEquatable";
 
 /**
  * Information about a student acting as a node in the C2C network

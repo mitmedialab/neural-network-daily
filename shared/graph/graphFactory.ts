@@ -30,8 +30,9 @@ class GraphFactory {
   }
 
   getLayerConfigMap(config: TGraphConfig): Map<EParticipantRole, TLayerConfig> {
+    const validLayers = this.layers.filter(value => config[value] !== undefined);
     const map: Map<EParticipantRole, TLayerConfig> = new Map<EParticipantRole, TLayerConfig>();
-    this.layers.filter(value => config[value] !== undefined).forEach(value => map.set(value, config[value]));
+    validLayers.forEach(value => map.set(value, config[value]));
     return map;
   }
 

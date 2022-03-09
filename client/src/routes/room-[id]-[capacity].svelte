@@ -1,13 +1,15 @@
 <script lang="ts">
   import { page } from "$app/stores";
-  import { graphFactory, room } from "$lib/activityStore";
+  import { graphFactory, inputs, room } from "$lib/store";
   import type EParticipantRole from "$lib/shared/enums/EParticipantRole";
+  import type { TConnectionInfo } from "$lib/shared/graph/C2CNode";
   import type C2CNode from "$lib/shared/graph/C2CNode";
   import type {
     TGraphConfig,
     TLayerConfig,
   } from "$lib/shared/graph/graphConfigs";
-  import { onMount } from "svelte";
+  import { getConnectionStyle } from "$lib/utils";
+  import { afterUpdate, onMount } from "svelte";
 
   const column = true;
   const layer = true;
@@ -17,28 +19,46 @@
   const output = true;
 
   const capacity = $page.params.capacity;
-  let graphConfig: TGraphConfig;
+  let graphConfig: TGraphConfig = undefined;
   $: graphConfig = $graphFactory.getConfig(parseInt(capacity));
 
-  let layerMap: Map<EParticipantRole, TLayerConfig>;
+  let layerMap: Map<EParticipantRole, TLayerConfig> = undefined;
   $: layerMap = $graphFactory.getLayerConfigMap(graphConfig);
 
-  let graph: Map<EParticipantRole, C2CNode<number, number>[]>;
-  $: graph = $graphFactory.buildGraph<number, number, number, number>(
-    graphConfig
-  );
+  let graph: Map<EParticipantRole, C2CNode<any, any>[]> = undefined;
+  $: graph = $graphFactory.buildGraph<any, any, any, any>(graphConfig);
 
   let elements: { [k in EParticipantRole]?: HTMLDivElement[] };
   $: elements = [...layerMap].reduce((obj, [type, layerConfig]) => {
-    const updated = { ...obj };
-    updated[type] = Array<HTMLDivElement>(layerConfig.nodeCount);
-    return updated;
+    const update = { ...obj };
+    update[type] = Array<HTMLDivElement>(layerConfig.nodeCount);
+    return update;
   }, {});
 
   const getColumnCss = (column: number) => `grid-column: ${column}`;
 
-  onMount(() => {
-    console.log(elements);
+  const styleForConnection = (
+    input: TConnectionInfo,
+    destinationLayer: EParticipantRole,
+    layerIndex: number
+  ): string => {
+    const origin = elements[input.layer][input.indexWithinLayer];
+    const destination = elements[destinationLayer][layerIndex];
+    return getConnectionStyle(origin, destination, "green", 10);
+  };
+
+  let connectionStyles: string[];
+  afterUpdate(() => {
+    connectionStyles = [];
+    [...layerMap].forEach(([layerType, layerConfig]) => {
+      for (let nodeIndex = 0; nodeIndex < layerConfig.nodeCount; nodeIndex++) {
+        const node: C2CNode<any, any> = graph.get(layerType)[nodeIndex];
+        node.connectedInputInfo?.forEach((input) => {
+          const style = styleForConnection(input, layerType, nodeIndex);
+          connectionStyles.push(style);
+        });
+      }
+    });
   });
 </script>
 
@@ -60,6 +80,7 @@
     height: 100px;
     border-radius: 50%;
     background-color: black;
+    z-index: 10;
   }
   .output {
     width: 100px;
@@ -72,19 +93,25 @@
 </style>
 
 <div>
-  {#each [...layerMap] as [type, layerConfig], layerIndex}
+  {#each [...layerMap] as [layerType, layerConfig], layerIndex}
     <div class:column>
       {#each Array(layerConfig.nodeCount) as _, nodeIndex}
         <div
           class:node
           class:pad={nodeIndex > 0}
           style={getColumnCss(layerIndex)}
-          bind:this={elements[type][nodeIndex]} />
+          bind:this={elements[layerType][nodeIndex]} />
       {/each}
     </div>
-    <div class:column class:connections>
-      <div class:connection />
+    <div class:column>
+      <div style="width: 100px" />
     </div>
   {/each}
   <div class:column class:output style={getColumnCss(graphConfig.depth)} />
 </div>
+
+{#if connectionStyles}
+  {#each connectionStyles as style}
+    <div {style} />
+  {/each}
+{/if}
