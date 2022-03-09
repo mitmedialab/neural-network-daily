@@ -13,3 +13,13 @@ export type THiddenLayer2Output = TContourSelection;
 
 export type TOutputLayerInput = TContourSelection;
 export type TOutputLayerOutput = EImageClassification;
+
+export type TCombined =
+  TInputLayerInput |
+  TInputLayerOuput |
+  THiddenLayer1Input |
+  THiddenLayer1Output |
+  THiddenLayer2Input |
+  THiddenLayer2Output |
+  TOutputLayerInput |
+  TOutputLayerOutput;

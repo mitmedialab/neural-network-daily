@@ -1,5 +1,6 @@
 import nameOf, { _function } from "nameOfUtility";
 import { TGraphConfig, TLayerConfig } from "shared/graph/graphConfigs";
+import C2CNode, { TConnectionInfo } from "../shared/graph/C2CNode";
 import EParticipantRole from "./shared/enums/EParticipantRole";
 import { TLayerInfo } from "./shared/graph/C2CNode";
 import GraphFactory from "./shared/graph/GraphFactory"
@@ -33,6 +34,23 @@ describe(nameOf(GraphFactory), () => {
   });
 
   test(nameOf(GraphFactory, _function, "buildNodeForGraph"), () => {
+    const inputLayerIndex = 2;
+    const hiddenLayerIndex = 4;
+    const outputLayerIndex = 5;
+
+    const inputNode: C2CNode<any, any> = factory.buildNodeForGraph(six, inputLayerIndex);
+    const hiddenLayerNode: C2CNode<any, any> = factory.buildNodeForGraph(six, hiddenLayerIndex);
+    const outputLayerNode: C2CNode<any, any> = factory.buildNodeForGraph(six, outputLayerIndex);
+
+    expect(inputNode.connectedInputInfo).toBe(undefined);
+    expect(hiddenLayerNode.connectedInputInfo).toEqual<TConnectionInfo[]>([
+      { indexWithinDataPacket: 1, layer: EParticipantRole.InputLayer, indexWithinLayer: 0 },
+      { indexWithinDataPacket: 1, layer: EParticipantRole.InputLayer, indexWithinLayer: 1 },
+      { indexWithinDataPacket: 1, layer: EParticipantRole.InputLayer, indexWithinLayer: 2 }]);
+    expect(outputLayerNode.connectedInputInfo).toEqual<TConnectionInfo[]>([
+      { indexWithinDataPacket: 0, layer: EParticipantRole.HiddenLayer1, indexWithinLayer: 0 },
+      { indexWithinDataPacket: 0, layer: EParticipantRole.HiddenLayer1, indexWithinLayer: 1 },
+    ])
   });
 
   test(nameOf(GraphFactory, _function, "getLayerConfigMap"), () => {

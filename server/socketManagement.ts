@@ -1,17 +1,17 @@
 import { Server } from 'socket.io';
 import type { Server as httpServer } from 'http'
 import type { Server as httpsServer } from 'https'
-
 import { devConsole } from './utils/devUtility.js';
 import { init as initGuidGenerator, getNext as getNextGuid, release as releaseGuid, init } from './utils/guidGenerator.js';
 import EParticipantRole from './shared/enums/EParticipantRole.js';
-import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from './shared/sockets/socketEvents.js';
+import { TCombined } from './shared/graph/inputOutputs';
+import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData, GenericServer } from './shared/sockets/socketEvents.js';
 
 const validRoomIDs: string[] = [];
 
 function establishSocketServer(server: httpServer | httpsServer) {
   initGuidGenerator();
-  const socketServer = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server);
+  const socketServer: GenericServer<TCombined> = new Server<ClientToServerEvents<TCombined>, ServerToClientEvents<TCombined>, InterServerEvents, SocketData>(server);
 
   socketServer.on("connection", (socket) => {
     devConsole?.log("New conncetion");
