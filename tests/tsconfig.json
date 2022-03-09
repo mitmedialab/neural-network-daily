@@ -14,16 +14,9 @@
     "resolveJsonModule": true,
     "types": [
       "@types/jest",
-      "@types/node"
+      "@types/node",
+      "@types/socket.io-client"
     ]
-  },
-  "paths": {
-    "$shared": [
-      "shared"
-    ],
-    "$shared/*": [
-      "shared/*"
-    ],
   },
   "include": [
     "./**.ts",

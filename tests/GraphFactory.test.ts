@@ -4,7 +4,7 @@ import EParticipantRole from "./shared/enums/EParticipantRole";
 import { TLayerInfo } from "./shared/graph/C2CNode";
 import GraphFactory from "./shared/graph/GraphFactory"
 
-describe("Graph Factory Tests", () => {
+describe(nameOf(GraphFactory), () => {
   const factory: GraphFactory = new GraphFactory();
   const six: TGraphConfig = factory.getConfig(6);
 
@@ -33,7 +33,6 @@ describe("Graph Factory Tests", () => {
   });
 
   test(nameOf(GraphFactory, _function, "buildNodeForGraph"), () => {
-    console.log(factory.buildNodeForGraph(six, 5));
   });
 
   test(nameOf(GraphFactory, _function, "getLayerConfigMap"), () => {

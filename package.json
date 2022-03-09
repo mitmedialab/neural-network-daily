@@ -13,7 +13,9 @@
     "cleanup": "npm run --prefix ./client/ cleanup && npm run --prefix ./server/ cleanup && rm -rf ./build/ "
   },
   "devDependencies": {
-    "npm": "^8.3.1"
+    "npm": "^8.3.1",
+    "@types/socket.io-client": "^3.0.0",
+    "socket.io-client": "^4.4.1"
   },
   "type": "module",
   "module": "es2020"
