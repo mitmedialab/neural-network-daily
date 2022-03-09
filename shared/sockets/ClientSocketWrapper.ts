@@ -6,7 +6,7 @@ import type { ServerToClientEvents, ClientToServerEvents, GenericClientSocket } 
 type TClientsideFunction<TDynamic> = (ServerToClientEvents<TDynamic>[keyof ServerToClientEvents<TDynamic>]);
 
 type TSocketConfig = {
-  endpoint?: string;
+  url?: string;
   onConnect?: () => void;
 }
 
@@ -18,10 +18,10 @@ class ClientSocketWrapper<TDynamic> {
     return new ClientSocketWrapper<TDynamic>(socket as GenericClientSocket<TDynamic>);
   }
 
-  static New<TDynamic>(config: TSocketConfig): ClientSocketWrapper<TDynamic> {
-    const socket: Socket<ServerToClientEvents<TDynamic>, ClientToServerEvents<TDynamic>> = config.endpoint ? io(config.endpoint) : io();
+  static New<TDynamic>(config?: TSocketConfig): ClientSocketWrapper<TDynamic> {
+    const socket: Socket<ServerToClientEvents<TDynamic>, ClientToServerEvents<TDynamic>> = config && config.url ? io(config.url) : io();
     const wrapper: ClientSocketWrapper<TDynamic> = new ClientSocketWrapper<TDynamic>(socket);
-    if (config.onConnect) wrapper.on("connect", config.onConnect);
+    if (config && config.onConnect) wrapper.on("connect", config.onConnect);
     return wrapper;
   }
 
@@ -88,25 +88,32 @@ class ClientSocketWrapper<TDynamic> {
   send<TName extends keyof ClientToServerEvents<TDynamic>>(name: TName, params: Parameters<ClientToServerEvents<TDynamic>[TName]>): boolean {
     const key: keyof ClientToServerEvents<TDynamic> = name;
     const mismatchError = () => `Passed in parameters (${Object.keys(params)}) does not match signature for ${name}`;
-    type joinRoomType = Parameters<ClientToServerEvents<TDynamic>["joinRoom"]>;
-    type startRoomType = Parameters<ClientToServerEvents<TDynamic>["startRoom"]>;
-    type propogateType = Parameters<ClientToServerEvents<TDynamic>["propogate"]>;
 
     switch (key) {
       case "joinRoom": {
-        const castedParams: joinRoomType = params as any as joinRoomType;
+        type type = Parameters<ClientToServerEvents<TDynamic>["joinRoom"]>;
+        const castedParams: type = params as any as type;
         if (castedParams === null) throw new Error(mismatchError());
         this.socket.emit("joinRoom", ...castedParams);
         return true;
       }
       case "startRoom": {
-        const castedParams: startRoomType = params as any as startRoomType;
+        type type = Parameters<ClientToServerEvents<TDynamic>["startRoom"]>;
+        const castedParams: type = params as any as type;
         if (castedParams === null) throw new Error(mismatchError());
         this.socket.emit("startRoom", ...castedParams);
         return true;
       }
+      case "checkRoom": {
+        type type = Parameters<ClientToServerEvents<TDynamic>["checkRoom"]>;
+        const castedParams: type = params as any as type;
+        if (castedParams === null) throw new Error(mismatchError());
+        this.socket.emit("checkRoom", ...castedParams);
+        return true;
+      }
       case "propogate": {
-        const castedParams: propogateType = params as any as propogateType;
+        type type = Parameters<ClientToServerEvents<TDynamic>["propogate"]>;
+        const castedParams: type = params as any as type;
         if (castedParams === null) throw new Error(mismatchError());
         this.socket.emit("propogate", ...castedParams);
         return true;

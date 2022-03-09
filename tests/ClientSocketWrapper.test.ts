@@ -7,40 +7,36 @@ import { waitForCondition } from "./shared/common/utils";
 import { TDataPacket } from "../shared/graph/C2CNode";
 import { GenericServerSocket } from "shared/sockets/socketEvents";
 import EParticipantRole from "../shared/enums/EParticipantRole";
+import { TestingServer } from "utils";
 
 describe(nameOf(ClientSocketWrapper), () => {
+  let testServer: TestingServer;
   let io: Server;
-  let httpServer: httpServer;
   let serverSocket: GenericServerSocket<number>;
   let clientWrapper: ClientSocketWrapper<number>;
 
   beforeAll((done) => {
-    httpServer = createServer();
-    io = new Server(httpServer);
-    httpServer.listen(() => {
-      const address: AddressInfo = httpServer.address() as AddressInfo;
-      const port = address.port;
-      io.on("connection", (socket) => {
-        serverSocket = socket;
-      });
-
-      clientWrapper = ClientSocketWrapper.New<number>({ endpoint: `http://localhost:${port}`, onConnect: done });
-    });
+    testServer = new TestingServer();
+    io = new Server(testServer.httpsServer);
+    io.on("connection", (socket) => { serverSocket = socket; });
+    clientWrapper = ClientSocketWrapper.New<number>({ url: testServer.url, onConnect: done });
   });
 
   afterAll(() => {
     io.close();
-    httpServer.close();
+    testServer.close();
     clientWrapper.close();
   });
 
   test(nameOf(ClientSocketWrapper, _function, "on"), async () => {
     const tests: Promise<void>[] = [];
 
-    let start = false;
-    clientWrapper.on("start", () => { start = true; });
+    let start1 = false;
+    let start2 = false;
+    clientWrapper.on("start", () => { start1 = true; });
+    clientWrapper.on("start", () => { start2 = true; });
     serverSocket.emit("start");
-    tests.push(waitForCondition(() => start));
+    tests.push(waitForCondition(() => start1 && start2));
 
     let update = false;
     const value: number = 10;

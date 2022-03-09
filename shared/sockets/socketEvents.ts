@@ -14,6 +14,7 @@ export interface ClientToServerEvents<TDynamic> {
   startRoom: (capcity: number, callback: (roomID: string) => void) => void;
   joinRoom: (roomID: string, callback: (role: EParticipantRole) => void) => void;
   propogate: <T extends TDynamic>(data: TDataPacket<T>) => void;
+  checkRoom: (roomID: string, callback: (success: boolean) => void) => void;
 }
 
 export interface InterServerEvents {
@@ -21,7 +22,8 @@ export interface InterServerEvents {
 
 export interface SocketData {
   roomID: string;
-  participantRole: number;
+  participantRole: EParticipantRole;
+  playerIndex: number;
 }
 
 export type GenericClientSocket<TDynamic> = ClientSocket<ServerToClientEvents<TDynamic>, ClientToServerEvents<TDynamic>>;

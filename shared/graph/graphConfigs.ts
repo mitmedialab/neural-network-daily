@@ -10,6 +10,8 @@ export type TGraphConfig = Record<EParticipantRole, TLayerConfig | undefined> & 
   depth: number;
 };
 
+export type TGraphMap = Map<EParticipantRole, Map<number, string>>;
+
 abstract class BaseConfig implements TGraphConfig {
   abstract capacity: number;
   abstract depth: number;

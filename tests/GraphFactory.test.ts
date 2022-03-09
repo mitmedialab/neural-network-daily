@@ -1,5 +1,5 @@
 import nameOf, { _function } from "nameOfUtility";
-import { TGraphConfig, TLayerConfig } from "shared/graph/graphConfigs";
+import { TGraphConfig, TGraphMap, TLayerConfig } from "shared/graph/graphConfigs";
 import C2CNode, { TConnectionInfo } from "../shared/graph/C2CNode";
 import EParticipantRole from "./shared/enums/EParticipantRole";
 import { TLayerInfo } from "./shared/graph/C2CNode";
@@ -55,5 +55,17 @@ describe(nameOf(GraphFactory), () => {
 
   test(nameOf(GraphFactory, _function, "getLayerConfigMap"), () => {
     const map: Map<EParticipantRole, TLayerConfig> = factory.getLayerConfigMap(six);
+  });
+
+  test(nameOf(GraphFactory, _function, "getEmptyGraphMap"), () => {
+    const map: TGraphMap = factory.getEmptyGraphMap(six);
+    expect(map.get(EParticipantRole.InputLayer)).not.toBe(undefined);
+    expect(map.get(EParticipantRole.HiddenLayer1)).not.toBe(undefined);
+    expect(map.get(EParticipantRole.HiddenLayer2)).toBe(undefined);
+    expect(map.get(EParticipantRole.OutputLayer)).not.toBe(undefined);
+  });
+
+  test(nameOf(GraphFactory, _function, "tryAddToFirstEmptyNode"), () => {
+
   });
 })

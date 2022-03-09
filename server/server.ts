@@ -7,7 +7,7 @@ import { handler } from '../client/handler.js';
 // add .js extension so it can be located after compiling typescript
 import { setUpLiveReloadForDevelopment } from './utils/devUtility.js';
 import process from './utils/processType.js';
-import establishSocketServer from './socketManagement.js';
+import establishSocketServer from './shared/sockets/socketManagement.js';
 
 const app = express();
 const server = process.env.NODE_ENV === 'dev' ? new http.Server(app) : new https.Server(app);

@@ -1,6 +1,6 @@
 import EParticipantRole from "../enums/EParticipantRole";
 import C2CNode, { TConnectionInfo, TLayerInfo, TParticipantInfo, TDataInfo } from "./C2CNode";
-import { Capacity10, Capacity11, Capacity12, Capacity6, Capacity7, Capacity8, Capacity9, TGraphConfig, TLayerConfig } from "./graphConfigs"
+import { Capacity10, Capacity11, Capacity12, Capacity6, Capacity7, Capacity8, Capacity9, TGraphConfig, TGraphMap, TLayerConfig } from "./graphConfigs"
 
 
 class GraphFactory {
@@ -30,10 +30,34 @@ class GraphFactory {
   }
 
   getLayerConfigMap(config: TGraphConfig): Map<EParticipantRole, TLayerConfig> {
-    const validLayers = this.layers.filter(value => config[value] !== undefined);
     const map: Map<EParticipantRole, TLayerConfig> = new Map<EParticipantRole, TLayerConfig>();
+    const validLayers = this.layers.filter(value => config[value] !== undefined);
     validLayers.forEach(value => map.set(value, config[value] as TLayerConfig));
     return map;
+  }
+
+  getEmptyGraphMap(config: TGraphConfig): TGraphMap {
+    const map = new Map<EParticipantRole, Map<number, string>>();
+    const validLayers = this.layers.filter(value => config[value] !== undefined);
+    validLayers.forEach(value => map.set(value, new Map<number, string>()));
+    return map;
+  }
+
+  tryAddToFirstEmptyNode(map: TGraphMap, config: TGraphConfig, id: string): { success: boolean; info: TLayerInfo } {
+    map.forEach((layerMap, layerType) => {
+      const layerCapacity = config[layerType]?.nodeCount ?? 0;
+      for (let nodeIndex = 0; nodeIndex < layerCapacity; nodeIndex++) {
+        if (!layerMap.has(nodeIndex)) {
+          layerMap.set(nodeIndex, id);
+          return { success: true, info: { layer: layerType, indexWithinLayer: nodeIndex } };
+        }
+      }
+    });
+    return { success: false, info: { layer: -1, indexWithinLayer: -1 } };
+  }
+
+  removeNode(map: TGraphMap, node: TLayerInfo): void {
+    map.get(node.layer)?.delete(node.indexWithinLayer);
   }
 
   getNodeInfoAtPosition(graphConfig: TGraphConfig, globalIndex: number): TLayerInfo {
