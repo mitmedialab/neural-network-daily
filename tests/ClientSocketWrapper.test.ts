@@ -4,8 +4,8 @@ import { Server, Socket } from "socket.io";
 import nameOf, { _function } from "./nameOfUtility";
 import ClientSocketWrapper from "./shared/sockets/ClientSocketWrapper";
 import { waitForCondition } from "./shared/common/utils";
-import { TDataPacket } from "../shared/graph/C2CNode";
-import { GenericServerSocket } from "shared/sockets/socketEvents";
+import { TDataPacket, TLayerInfo } from "../shared/graph/C2CNode";
+import { GenericServerSocket, TJoinRoomResponse, toInfo } from "shared/sockets/socketEvents";
 import EParticipantRole from "../shared/enums/EParticipantRole";
 import { TestingServer } from "utils";
 
@@ -67,13 +67,17 @@ describe(nameOf(ClientSocketWrapper), () => {
     tests.push(waitForCondition(() => start));
 
     let join = false;
-    const roleToSet: EParticipantRole = EParticipantRole.HiddenLayer2;
-    serverSocket.on("joinRoom", (roomID: string, callback: (role: EParticipantRole) => void) => {
+    const responseToSet: TJoinRoomResponse = {
+      success: true,
+      layer: EParticipantRole.HiddenLayer2,
+      indexWithinLayer: 1,
+    }
+    serverSocket.on("joinRoom", (roomID: string, callback: (response: TJoinRoomResponse) => void) => {
       expect(roomID).toBe(roomToSet);
-      callback(roleToSet);
+      callback(responseToSet);
     });
-    clientWrapper.send("joinRoom", [roomToSet, (role: EParticipantRole) => {
-      expect(role).toBe(roleToSet);
+    clientWrapper.send("joinRoom", [roomToSet, (response: TJoinRoomResponse) => {
+      expect(response).toEqual(responseToSet);
       join = true;
     }]);
     tests.push(waitForCondition(() => join));
@@ -84,7 +88,7 @@ describe(nameOf(ClientSocketWrapper), () => {
       expect(packet.data[0]).toBe(value);
       propogate = true;
     });
-    clientWrapper.send("propogate", [{ info: { layer: roleToSet, indexWithinLayer: 0 }, data: [value] }]);
+    clientWrapper.send("propogate", [{ info: toInfo(responseToSet), data: [value] }]);
     tests.push(waitForCondition(() => propogate));
 
     await Promise.all(tests);

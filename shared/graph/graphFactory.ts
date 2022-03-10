@@ -43,8 +43,18 @@ class GraphFactory {
     return map;
   }
 
+  getNumberOfActiveNodes(map: TGraphMap) {
+    let count = 0;
+    for (const entry of map) {
+      const [_, layerMap]: [EParticipantRole, Map<number, string>] = entry;
+      count += layerMap.size;
+    }
+    return count;
+  }
+
   tryAddToFirstEmptyNode(map: TGraphMap, config: TGraphConfig, id: string): { success: boolean; info: TLayerInfo } {
-    map.forEach((layerMap, layerType) => {
+    for (const entry of map) {
+      const [layerType, layerMap]: [EParticipantRole, Map<number, string>] = entry;
       const layerCapacity = config[layerType]?.nodeCount ?? 0;
       for (let nodeIndex = 0; nodeIndex < layerCapacity; nodeIndex++) {
         if (!layerMap.has(nodeIndex)) {
@@ -52,7 +62,7 @@ class GraphFactory {
           return { success: true, info: { layer: layerType, indexWithinLayer: nodeIndex } };
         }
       }
-    });
+    }
     return { success: false, info: { layer: -1, indexWithinLayer: -1 } };
   }
 

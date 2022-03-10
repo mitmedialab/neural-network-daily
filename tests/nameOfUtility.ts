@@ -1,3 +1,5 @@
+import { Interface } from "readline";
+
 export type format = (className: string, memberName: string) => string;
 
 export const _class: format = (className: string) => className;
