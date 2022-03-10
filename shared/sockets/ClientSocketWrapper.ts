@@ -18,7 +18,7 @@ class ClientSocketWrapper<TDynamic> {
     return new ClientSocketWrapper<TDynamic>(socket as GenericClientSocket<TDynamic>);
   }
 
-  static New<TDynamic>(config?: TSocketConfig): ClientSocketWrapper<TDynamic> {
+  static Connect<TDynamic>(config?: TSocketConfig): ClientSocketWrapper<TDynamic> {
     const socket: Socket<ServerToClientEvents<TDynamic>, ClientToServerEvents<TDynamic>> = config && config.url ? io(config.url) : io();
     const wrapper: ClientSocketWrapper<TDynamic> = new ClientSocketWrapper<TDynamic>(socket);
     if (config && config.onConnect) wrapper.on("connect", config.onConnect);
@@ -116,6 +116,13 @@ class ClientSocketWrapper<TDynamic> {
         const castedParams: type = params as any as type;
         if (castedParams === null) throw new Error(mismatchError());
         this.socket.emit("propogate", ...castedParams);
+        return true;
+      }
+      case "testing_getRoomCounts": {
+        type type = Parameters<ClientToServerEvents<TDynamic>["testing_getRoomCounts"]>;
+        const castedParams: type = params as any as type;
+        if (castedParams === null) throw new Error(mismatchError());
+        this.socket.emit("testing_getRoomCounts", ...castedParams);
         return true;
       }
     }

@@ -3,6 +3,7 @@ import type { TDataPacket } from "../graph/C2CNode";
 import type { Socket as ClientSocket } from "socket.io-client";
 import type { Socket as ServerSocket, Server } from "socket.io";
 import { TLayerInfo } from "../graph/C2CNode";
+import { TGraphConfig, TGraphMap } from "shared/graph/graphConfigs";
 
 
 export interface ServerToClientEvents<TDynamic> {
@@ -16,6 +17,7 @@ export interface ClientToServerEvents<TDynamic> {
   joinRoom: (roomID: string, callback: (reponse: TJoinRoomResponse) => void) => void;
   propogate: <T extends TDynamic>(data: TDataPacket<T>) => void;
   checkRoom: (roomID: string, callback: (success: boolean) => void) => void;
+  testing_getRoomCounts: (callback: (map: Record<string, number>) => void) => void;
 }
 
 export interface InterServerEvents {

@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 import type { Server as httpServer } from 'http'
 import type { Server as httpsServer } from 'https'
-import { init as initGuidGenerator, getNext as getNextGuid, release as releaseGuid } from '../common/guidGenerator';
+import GuidGenerator from '../common/GuidGenerator';
 import EParticipantRole from '../enums/EParticipantRole';
 import { TCombined } from '../graph/inputOutputs';
 import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData, GenericServer, TJoinRoomResponse, EJoinRoomFailure } from './socketEvents';
@@ -13,25 +13,27 @@ function establishSocketServer(server: httpServer | httpsServer): GenericServer<
   const graphFactory: GraphFactory = new GraphFactory();
   type TRoomData = { config: TGraphConfig; graph: TGraphMap };
   const graphByRoom: Map<string, TRoomData> = new Map<string, TRoomData>();
-
-  initGuidGenerator();
+  const guidGenerator: GuidGenerator = new GuidGenerator();
   const socketServer: GenericServer<TCombined> = new Server<ClientToServerEvents<TCombined>, ServerToClientEvents<TCombined>, InterServerEvents, SocketData>(server);
 
   socketServer.on("connection", (socket) => {
     socket.on("disconnect", () => {
       if (socket.data.roomID) {
-        if (socket.data.participantRole == EParticipantRole.Facilitator) {
-
-        } else {
-
+        const { roomID, participantRole, indexWithinLayer } = socket.data;
+        if (participantRole !== EParticipantRole.Facilitator) {
+          const graph = graphByRoom.get(roomID)?.graph as TGraphMap;
+          const node = { layer: participantRole as EParticipantRole, indexWithinLayer: indexWithinLayer as number };
+          graphFactory.removeNode(graph, node);
         }
-      } else {
-        console.log("disconnecting unroomed");
+        if (getSizeOfRoom(socketServer, roomID) === 0) {
+          guidGenerator.release(roomID);
+          if (!graphByRoom.delete(roomID)) throw new Error(`Unable to delete room: ${roomID}`);
+        }
       }
     })
 
     socket.on("startRoom", (capacity: number, callback: (roomID: string) => void) => {
-      const roomID: string = getNextGuid();
+      const roomID: string = guidGenerator.getNext();
       socket.data.roomID = roomID;
       socket.data.participantRole = EParticipantRole.Facilitator;
       socket.join(roomID);
@@ -41,7 +43,7 @@ function establishSocketServer(server: httpServer | httpsServer): GenericServer<
     });
 
     socket.on("checkRoom", (roomID: string, callback: (success: boolean) => void) => {
-      callback(graphByRoom.has(roomID));
+      callback(graphByRoom.has(roomID) && roomExists(socketServer, roomID));
     });
 
     socket.on("joinRoom", (roomID: string, callback: (reponse: TJoinRoomResponse) => void) => {
@@ -55,6 +57,7 @@ function establishSocketServer(server: httpServer | httpsServer): GenericServer<
           socket.data.indexWithinLayer = indexWithinLayer;
           socket.data.roomID = roomID;
           socket.join(roomID);
+
           callback({ success, indexWithinLayer, layer })
         } else {
           callback({ success, failure: EJoinRoomFailure.RoomAtCapacity })
@@ -63,10 +66,21 @@ function establishSocketServer(server: httpServer | httpsServer): GenericServer<
         callback({ success: false, failure: EJoinRoomFailure.NoSuchRoom })
       }
     });
-    socket.broadcast
+
+    socket.on("testing_getRoomCounts", (callback: (map: Record<string, number>) => void) => {
+      const toReturn: Record<string, number> = {};
+      for (const [room, data] of Array.from(graphByRoom)) {
+        toReturn[room] = graphFactory.getNumberOfActiveNodes(data.graph);
+      }
+      callback(toReturn);
+    });
   });
 
   return socketServer;
+}
+
+export const roomExists = (server: GenericServer<TCombined>, room: string): boolean => {
+  return server.sockets.adapter.rooms.get(room) !== undefined;
 }
 
 export const getSizeOfRoom = (server: GenericServer<TCombined>, room: string): number => {

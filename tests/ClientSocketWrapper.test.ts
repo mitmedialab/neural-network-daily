@@ -19,7 +19,7 @@ describe(nameOf(ClientSocketWrapper), () => {
     testServer = new TestingServer();
     io = new Server(testServer.httpsServer);
     io.on("connection", (socket) => { serverSocket = socket; });
-    clientWrapper = ClientSocketWrapper.New<number>({ url: testServer.url, onConnect: done });
+    clientWrapper = ClientSocketWrapper.Connect<number>({ url: testServer.url, onConnect: done });
   });
 
   afterAll(() => {
