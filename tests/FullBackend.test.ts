@@ -12,6 +12,7 @@ import C2CNode, { TDataPacket, TLayerInfo } from "../shared/graph/C2CNode";
 import establishSocketServer, { getSizeOfRoom, getTotalNumberOfSockets, roomExists } from "./shared/sockets/socketManagement";
 
 describe("Full Backend", () => {
+  const capacities = [6, 7, 8, 9, 10, 11, 12];
   let factory: GraphFactory;
   let testServer: TestingServer;
   let socketServer: GenericServer<TCombined>;
@@ -52,11 +53,11 @@ describe("Full Backend", () => {
     testServer.close();
   })
 
-  test("Room Management", async () => {
+  test.each(capacities)("Room Management", async (capacity: number) => {
     const [facilitatorSocket, studentSocket] = await getSockets(2);
     expect(getTotalNumberOfSockets(socketServer)).toBe(2);
 
-    const room = await startRoom(facilitatorSocket, 6);
+    const room = await startRoom(facilitatorSocket, capacity);
     expect(roomExists(socketServer, room)).toBe(true);
     expect(getSizeOfRoom(socketServer, room)).toBe(1);
 
@@ -83,7 +84,7 @@ describe("Full Backend", () => {
     expect(roomExists(socketServer, room)).toBe(false);
   });
 
-  test("Room Joining", async () => {
+  test.each(capacities)("Room Joining", async (capacity: number) => {
     const validateResponse = (response: TJoinRoomResponse) => {
       expect(response.success).toBe(true);
       expect(response.indexWithinLayer).not.toBe(undefined);
@@ -95,16 +96,15 @@ describe("Full Backend", () => {
       expect(response.failure).toBe(reason);
     }
 
-    const roomCapacity = 6;
-    const config = factory.getConfig(roomCapacity);
-    const sockets: ClientSocketWrapper<any>[] = await getSockets(roomCapacity + 1);
+    const config = factory.getConfig(capacity);
+    const sockets: ClientSocketWrapper<any>[] = await getSockets(capacity + 1);
 
     const facilitatorSocket: ClientSocketWrapper<any> = sockets[0];
     const studentSockets: ClientSocketWrapper<any>[] = sockets.filter((_, index) => index > 0);
 
-    expect(getTotalNumberOfSockets(socketServer)).toBe(roomCapacity + 1);
+    expect(getTotalNumberOfSockets(socketServer)).toBe(capacity + 1);
 
-    const room = await startRoom(facilitatorSocket, roomCapacity);
+    const room = await startRoom(facilitatorSocket, capacity);
 
     let count = 0;
     for (const [layer, layerConfig] of factory.getLayerConfigMap(config)) {
@@ -138,8 +138,8 @@ describe("Full Backend", () => {
 
     await Promise.all([waitForCondition(() => badCapacityAttempt), waitForCondition(() => badRoomAttempt)]);
 
-    expect(getSizeOfRoom(socketServer, room)).toBe(roomCapacity + 1);
-    expect(getTotalNumberOfSockets(socketServer)).toBe(roomCapacity + 2);
+    expect(getSizeOfRoom(socketServer, room)).toBe(capacity + 1);
+    expect(getTotalNumberOfSockets(socketServer)).toBe(capacity + 2);
     doomedSocket.close();
 
     sockets.forEach(socket => socket.close());
@@ -150,20 +150,46 @@ describe("Full Backend", () => {
     await waitForCondition(() => roomToZero() && roomDestroyed() && noMoreSockets());
   }, 2000);
 
-  test("Data Sending", async () => {
+  const getContourData = (indexWithinLayer: number, config: TGraphConfig): TContour[] => {
+    const author = { layer: EParticipantRole.InputLayer, indexWithinLayer };
+    const nextNodeCount = (config[EParticipantRole.HiddenLayer1] as TLayerConfig).nodeCount;
+    const contours: TContour[] = [];
+    for (let i = 0; i < nextNodeCount; i++) {
+      const value = indexWithinLayer * nextNodeCount + i;
+      const path: TCoordinate[] = [{ x: value, y: value }];
+      const contour: TContour = { author, path };
+      contours.push(contour);
+    }
+    return contours;
+  }
+
+  const getContourSelectionData = (indexWithinLayer: number, config: TGraphConfig): TContour[] => {
+    const author = { layer: EParticipantRole.InputLayer, indexWithinLayer };
+    const nextNodeCount = (config[EParticipantRole.HiddenLayer1] as TLayerConfig).nodeCount;
+    const contours: TContour[] = [];
+    for (let i = 0; i < nextNodeCount; i++) {
+      const value = indexWithinLayer * nextNodeCount + i;
+      const path: TCoordinate[] = [{ x: value, y: value }];
+      const contour: TContour = { author, path };
+      contours.push(contour);
+    }
+    return contours;
+  }
+
+  test.each(capacities)("Data Sending", async (capacity: number) => {
     const factory = new GraphFactory();
-    const roomCapacity = 6;
-    const config = factory.getConfig(roomCapacity);
-    const sockets: ClientSocketWrapper<any>[] = await getSockets(roomCapacity + 1);
+    const config = factory.getConfig(capacity);
+    const sockets: ClientSocketWrapper<any>[] = await getSockets(capacity + 1);
     const facilitatorSocket: ClientSocketWrapper<any> = sockets[0];
     const studentSockets: ClientSocketWrapper<any>[] = sockets.filter((_, index) => index > 0);
+
     type TFakeStudent = {
       node?: C2CNode<TCombined, TCombined>;
       socket: ClientSocketWrapper<TCombined>;
       receivedCount: number;
     }
 
-    const room = await startRoom(facilitatorSocket, roomCapacity);
+    const room = await startRoom(facilitatorSocket, capacity);
 
     const students: TFakeStudent[] = studentSockets.map(socket => {
       const self: TFakeStudent = { socket, node: undefined, receivedCount: 0 };
@@ -215,41 +241,27 @@ describe("Full Backend", () => {
       }
     }
 
-    const getContourData = (indexWithinLayer: number): TContour[] => {
-      const author = { layer: EParticipantRole.InputLayer, indexWithinLayer };
-      const nextNodeCount = (config[EParticipantRole.HiddenLayer1] as TLayerConfig).nodeCount;
-      const contours: TContour[] = [];
-      for (let i = 0; i < nextNodeCount; i++) {
-        const value = indexWithinLayer * nextNodeCount + i;
-        const path: TCoordinate[] = [{ x: value, y: value }];
-        const contour: TContour = { author, path };
-        contours.push(contour);
-      }
-      return contours;
-    }
-
     const inputs = studentGraph.get(EParticipantRole.InputLayer)?.entries() as IterableIterator<[number, TFakeStudent]>;
     for (const [index, student] of inputs) {
       const info: TLayerInfo = { layer: EParticipantRole.InputLayer, indexWithinLayer: index };
-      const data: TContour[] = getContourData(index);
+      const data: TContour[] = getContourData(index, config);
       student.socket.send("propogate", [{ info, data }]);
     }
 
     await Promise.all(getWaitingCondition());
     reset();
 
-    const nodes = Array.from(studentGraph.values()).map(students => students.map(student => student.node));
-
     Array.from(studentGraph.entries()).forEach(([layer, students]) => {
-      const contourByNode: TContour[][] = Array.from(Array(config[EParticipantRole.InputLayer]?.nodeCount).keys()).map(nodeIndex => getContourData(nodeIndex));
-      if (layer === EParticipantRole.HiddenLayer1) {
+      const contourByNode: TContour[][] = Array.from(Array(config[EParticipantRole.InputLayer]?.nodeCount).keys()).map(nodeIndex => getContourData(nodeIndex, config));
+      if (layer === currentReceivingLayer) {
         students.forEach((student, index) => {
           expect(student.node?.input).toEqual(contourByNode.map(contours => contours[index]));
         })
       }
     });
 
-    //const node = factory.buildNodeForGraph(config,);//
-    // also need nodes
+    // now check for contour selection 
+
+    sockets.forEach(socket => socket.close());
   }, 10000);
 })
