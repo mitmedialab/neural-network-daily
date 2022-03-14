@@ -34,7 +34,7 @@ export class Capacity6 extends BaseConfig {
   };
   [EParticipantRole.HiddenLayer1] = {
     nodeCount: 2,
-    outputsPerNode: 2,
+    outputsPerNode: 1,
   };
   [EParticipantRole.HiddenLayer2] = undefined;
 }
@@ -48,7 +48,7 @@ export class Capacity7 extends BaseConfig {
   };
   [EParticipantRole.HiddenLayer1] = {
     nodeCount: 2,
-    outputsPerNode: 2,
+    outputsPerNode: 1,
   };
   [EParticipantRole.HiddenLayer2] = undefined;
 }
@@ -62,11 +62,11 @@ export class Capacity8 extends BaseConfig {
   };
   [EParticipantRole.HiddenLayer1] = {
     nodeCount: 2,
-    outputsPerNode: 3,
+    outputsPerNode: 1,
   };
   [EParticipantRole.HiddenLayer2] = {
     nodeCount: 1,
-    outputsPerNode: 4,
+    outputsPerNode: 1,
   };
 }
 
@@ -79,11 +79,11 @@ export class Capacity9 extends BaseConfig {
   };
   [EParticipantRole.HiddenLayer1] = {
     nodeCount: 3,
-    outputsPerNode: 2,
+    outputsPerNode: 1,
   };
   [EParticipantRole.HiddenLayer2] = {
     nodeCount: 1,
-    outputsPerNode: 4,
+    outputsPerNode: 1,
   };
 }
 
@@ -96,11 +96,11 @@ export class Capacity10 extends BaseConfig {
   };
   [EParticipantRole.HiddenLayer1] = {
     nodeCount: 4,
-    outputsPerNode: 2,
+    outputsPerNode: 1,
   };
   [EParticipantRole.HiddenLayer2] = {
     nodeCount: 1,
-    outputsPerNode: 4,
+    outputsPerNode: 1,
   };
 }
 
@@ -113,11 +113,11 @@ export class Capacity11 extends BaseConfig {
   };
   [EParticipantRole.HiddenLayer1] = {
     nodeCount: 4,
-    outputsPerNode: 2,
+    outputsPerNode: 1,
   };
   [EParticipantRole.HiddenLayer2] = {
     nodeCount: 1,
-    outputsPerNode: 4,
+    outputsPerNode: 1,
   };
 }
 
@@ -130,10 +130,10 @@ export class Capacity12 extends BaseConfig {
   };
   [EParticipantRole.HiddenLayer1] = {
     nodeCount: 4,
-    outputsPerNode: 2,
+    outputsPerNode: 1,
   };
   [EParticipantRole.HiddenLayer2] = {
     nodeCount: 1,
-    outputsPerNode: 4,
+    outputsPerNode: 1,
   };
 }

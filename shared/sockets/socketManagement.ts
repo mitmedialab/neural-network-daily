@@ -7,7 +7,8 @@ import { TCombined } from '../graph/inputOutputs';
 import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData, GenericServer, TJoinRoomResponse, EJoinRoomFailure } from './socketEvents';
 import { TGraphConfig, TGraphMap } from '../graph/graphConfigs';
 import GraphFactory from '../graph/GraphFactory';
-import { TLayerInfo } from '../graph/C2CNode';
+import { TDataPacket } from '../graph/C2CNode';
+import { deepToString } from 'shared/common/utils';
 
 function establishSocketServer(server: httpServer | httpsServer): GenericServer<TCombined> {
   const graphFactory: GraphFactory = new GraphFactory();
@@ -64,6 +65,12 @@ function establishSocketServer(server: httpServer | httpsServer): GenericServer<
         }
       } else {
         callback({ success: false, failure: EJoinRoomFailure.NoSuchRoom })
+      }
+    });
+
+    socket.on("propogate", (data: TDataPacket<TCombined>) => {
+      if (socket.data.roomID) {
+        socket.to(socket.data.roomID as string).emit("update", data);
       }
     });
 

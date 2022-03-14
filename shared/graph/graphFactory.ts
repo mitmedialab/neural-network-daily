@@ -102,14 +102,12 @@ class GraphFactory {
   buildNodeForGraph
     <TInput, TOutput>(
       graphConfig: TGraphConfig,
-      globalIndex: number,
+      nodeInfo: TLayerInfo,
       participantInfo: TParticipantInfo = { name: "defaultName", room: "defaultRoom" }):
     C2CNode<TInput, TOutput> {
-    if (globalIndex > graphConfig.capacity - 1) throw new Error(`Invalid index: index ${globalIndex} for capacity ${graphConfig.capacity}`)
-
-    const nodeInfo = this.getNodeInfoAtPosition(graphConfig, globalIndex);
     const layerInfo = graphConfig[nodeInfo.layer];
     if (layerInfo === undefined) throw new Error(`No information on node's layer: ${nodeInfo.layer}`);
+    if (nodeInfo.indexWithinLayer >= layerInfo.nodeCount) throw new Error(`Invalid node (layer: ${nodeInfo.layer}, index: ${nodeInfo.indexWithinLayer}) for graph of capacity ${graphConfig.capacity}`)
 
     let inputSize: number;
     let connections: TConnectionInfo[] | undefined;
@@ -140,21 +138,18 @@ class GraphFactory {
   addToGraph<TInput, TOutput>(
     graph: Map<EParticipantRole, C2CNode<TInput, TOutput>[]>,
     graphConfig: TGraphConfig,
-    layer: EParticipantRole,
-    alreadyAdded: number): number {
-    if (graphConfig[layer] === undefined) return 0;
+    layer: EParticipantRole): void {
+    if (graphConfig[layer] === undefined) return;
     const { nodeCount } = graphConfig[layer] as TLayerConfig;
 
     for (let i = 0; i < nodeCount; i++) {
-      const globalIndex = alreadyAdded + i;
-      const node = this.buildNodeForGraph<TInput, TOutput>(graphConfig, globalIndex);
+      const node = this.buildNodeForGraph<TInput, TOutput>(graphConfig, { layer, indexWithinLayer: i });
       if (graph.has(layer)) {
         graph.get(layer)?.push(node);
       } else {
         graph.set(layer, [node]);
       }
     }
-    return nodeCount;
   }
 
   buildGraph
@@ -165,14 +160,9 @@ class GraphFactory {
     type TPotentialOutputs = TInputLayerOutput | THiddenLayer1Output | THiddenLayer2Output | TOutputLayerOuput;
     type TNodeType = C2CNode<TPotentialInputs, TPotentialOutputs>;
     const map: Map<EParticipantRole, TNodeType[]> = new Map<EParticipantRole, TNodeType[]>();
-
-    let nodeCount = 0;
-    nodeCount += this.addToGraph(map, graphConfig, EParticipantRole.InputLayer, nodeCount);
-    nodeCount += this.addToGraph(map, graphConfig, EParticipantRole.HiddenLayer1, nodeCount);
-    nodeCount += this.addToGraph(map, graphConfig, EParticipantRole.HiddenLayer2, nodeCount);
-    nodeCount += this.addToGraph(map, graphConfig, EParticipantRole.OutputLayer, nodeCount);
-
-    if (nodeCount != graphConfig.capacity) throw new Error(`Number of nodes added (${nodeCount}) did not match graph's capacity (${graphConfig.capacity})`);
+    this.layers.
+      filter(layer => graphConfig[layer]).
+      forEach(layer => this.addToGraph(map, graphConfig, layer));
     return map;
   }
 }

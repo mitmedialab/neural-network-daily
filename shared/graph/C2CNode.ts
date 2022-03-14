@@ -1,5 +1,5 @@
-import type EParticipantRole from "../enums/EParticipantRole";
-import type IEquatable from "../common/IEquatable";
+import { deepToString } from "shared/common/utils";
+import EParticipantRole from "../enums/EParticipantRole";
 
 /**
  * Information about a student acting as a node in the C2C network
@@ -61,7 +61,7 @@ type TNode<TInput, TOutput> = {
 }
 
 class C2CNode<TInput, TOutput>
-  implements TNode<TInput, TOutput>, TLayerInfo, IEquatable<TLayerInfo>, TParticipantInfo {
+  implements TNode<TInput, TOutput>, TLayerInfo, TParticipantInfo {
   outputSize: number;
   inputSize: number;
   input: (TInput | undefined)[];
@@ -72,16 +72,19 @@ class C2CNode<TInput, TOutput>
   name: string;
   room: string;
 
-  equals(other: TLayerInfo): boolean {
-    return other.layer === this.layer && other.indexWithinLayer === this.indexWithinLayer
+  static nodesEqual(a: TLayerInfo, b: TLayerInfo): boolean {
+    return a.layer === b.layer && a.indexWithinLayer === b.indexWithinLayer;
   };
-  trySetInput(packet: TDataPacket<TInput>): void {
-    this.connectedInputInfo?.forEach((info, index) => {
-      if (this.equals(packet.info)) {
+
+  trySetInput(packet: TDataPacket<TInput>): boolean {
+    if (!this.connectedInputInfo) return false;
+    for (const [index, info] of this.connectedInputInfo.entries()) {
+      if (C2CNode.nodesEqual(info, packet.info)) {
         this.input[index] = packet.data[info.indexWithinDataPacket];
-        return;
+        return true;
       }
-    })
+    }
+    return false;
   }
   getOuput(): TDataPacket<TOutput> {
     if (this.output.includes(undefined)) { throw new Error("Output is undefined!") };

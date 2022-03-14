@@ -1,5 +1,4 @@
-import type IEquatable from "../common/IEquatable";
-import { TLayerConfig } from "../graph/graphConfigs";
+import { TLayerInfo } from "../../../shared/graph/C2CNode";
 
 export type TCoordinate = {
   x: number;
@@ -7,7 +6,7 @@ export type TCoordinate = {
 }
 
 export type TContour = {
-  author: TLayerConfig;
+  author: TLayerInfo;
   path: TCoordinate[];
 }
 

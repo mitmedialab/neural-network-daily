@@ -35,13 +35,9 @@ describe(nameOf(GraphFactory), () => {
   });
 
   test(nameOf(GraphFactory, _function, "buildNodeForGraph"), () => {
-    const inputLayerIndex = 2;
-    const hiddenLayerIndex = 4;
-    const outputLayerIndex = 5;
-
-    const inputNode: C2CNode<any, any> = factory.buildNodeForGraph(six, inputLayerIndex);
-    const hiddenLayerNode: C2CNode<any, any> = factory.buildNodeForGraph(six, hiddenLayerIndex);
-    const outputLayerNode: C2CNode<any, any> = factory.buildNodeForGraph(six, outputLayerIndex);
+    const inputNode: C2CNode<any, any> = factory.buildNodeForGraph(six, { layer: EParticipantRole.InputLayer, indexWithinLayer: 2 });
+    const hiddenLayerNode: C2CNode<any, any> = factory.buildNodeForGraph(six, { layer: EParticipantRole.HiddenLayer1, indexWithinLayer: 1 });
+    const outputLayerNode: C2CNode<any, any> = factory.buildNodeForGraph(six, { layer: EParticipantRole.OutputLayer, indexWithinLayer: 0 });
 
     expect(inputNode.connectedInputInfo).toBe(undefined);
     expect(hiddenLayerNode.connectedInputInfo).toEqual<TConnectionInfo[]>([
