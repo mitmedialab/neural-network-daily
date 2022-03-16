@@ -5,10 +5,10 @@
     "setup": "npm install",
     "dev": "./node_modules/.bin/nodemon & svelte-kit dev --port 5000",
     "copy:package:config": "cp ./package.json ../build/client/package.json && cp ./package-lock.json ../build/client/package-lock.json",
-    "install:production:dependencies": "cd ../build/client/ && rm -rf ./node_modules/ && npm ci --production",
+    "install:production:dependencies": "mkdir ../build/client && cd ../build/client/ && rm -rf ./node_modules/ && npm ci --production",
     "build:dependencies": "npm run copy:package:config && npm run install:production:dependencies",
-    "build:svelte": "svelte-kit build",
-    "build": "npm run build:svelte && npm run build:dependencies",
+    "build:svelte": "svelte-kit build && touch ../build/ClientBuilt",
+    "build": "npm run build:dependencies && npm run build:svelte",
     "cleanup": "rm -rf ../build/client/"
   },
   "devDependencies": {

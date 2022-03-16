@@ -7,6 +7,9 @@
       "es2020"
     ],
     "allowJs": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "outDir": "../build/server",
     "rootDir": "./",
     "strict": true,
@@ -15,6 +18,6 @@
     "resolveJsonModule": true
   },
   "include": [
-    "./**.ts",
+    "./src/**.ts",
   ],
 }

@@ -3,7 +3,6 @@ import type { TDataPacket } from "../graph/C2CNode";
 import type { Socket as ClientSocket } from "socket.io-client";
 import type { Socket as ServerSocket, Server } from "socket.io";
 import { TLayerInfo } from "../graph/C2CNode";
-import { TGraphConfig, TGraphMap } from "shared/graph/graphConfigs";
 
 
 export interface ServerToClientEvents<TDynamic> {

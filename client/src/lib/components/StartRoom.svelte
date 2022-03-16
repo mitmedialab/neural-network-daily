@@ -6,8 +6,7 @@
 </script>
 
 <script lang="ts">
-  import socket from "$lib/socketStore";
-  import { room } from "$lib/activityStore";
+  import { socket } from "$lib/store";
 
   const inputMin = 6;
   const inputMax = 50;

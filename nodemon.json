@@ -1,0 +1,7 @@
+{
+  "watch": [
+    "./build/ClientBuilt",
+    "./build/ServerBuilt"
+  ],
+  "exec": "npm run server dev:server"
+}

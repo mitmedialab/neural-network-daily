@@ -1,7 +1,6 @@
 import EParticipantRole from "../enums/EParticipantRole";
 import C2CNode, { TConnectionInfo, TLayerInfo, TParticipantInfo, TDataInfo } from "./C2CNode";
-import { Capacity10, Capacity11, Capacity12, Capacity6, Capacity7, Capacity8, Capacity9, TGraphConfig, TGraphMap, TLayerConfig } from "./graphConfigs"
-
+import { Capacity6, Capacity7, Capacity8, Capacity9, Capacity10, Capacity11, Capacity12, TGraphConfig, TGraphMap, TLayerConfig } from "./graphConfigs"
 
 class GraphFactory {
   layers: EParticipantRole[];

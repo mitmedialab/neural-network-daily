@@ -8,7 +8,6 @@ import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketDa
 import { TGraphConfig, TGraphMap } from '../graph/graphConfigs';
 import GraphFactory from '../graph/GraphFactory';
 import { TDataPacket } from '../graph/C2CNode';
-import { deepToString } from 'shared/common/utils';
 
 function establishSocketServer(server: httpServer | httpsServer): GenericServer<TCombined> {
   const graphFactory: GraphFactory = new GraphFactory();

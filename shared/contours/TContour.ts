@@ -1,4 +1,4 @@
-import { TLayerInfo } from "../../../shared/graph/C2CNode";
+import { TLayerInfo } from "../graph/C2CNode";
 
 export type TCoordinate = {
   x: number;

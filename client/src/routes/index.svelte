@@ -4,7 +4,7 @@
 
 <h1>No Welcome to SvelteKit get you you</h1>
 <p>
-	Hiii
+	Hiii okay
 	<a href="https://kit.svelte.dev">kit.svelte.dev</a>
 	to read the documentation
 </p>

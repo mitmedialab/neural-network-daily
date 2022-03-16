@@ -1,6 +1,6 @@
-import TContour from "../contours/TContour";
-import TContourSelection from "../contours/TContourSelection";
-import EImageClassification from "../enums/EImageClassification";
+import TContour from "../contours/TContour.js";
+import TContourSelection from "../contours/TContourSelection.js";
+import EImageClassification from "../enums/EImageClassification.js";
 
 export type TInputLayerInput = undefined;
 export type TInputLayerOuput = TContour;

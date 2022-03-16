@@ -1,4 +1,3 @@
-import { deepToString } from "shared/common/utils";
 import EParticipantRole from "../enums/EParticipantRole";
 
 /**

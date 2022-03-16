@@ -1,0 +1,79 @@
+{
+  ".svelte-kit/runtime/client/start.js": {
+    "file": "start-814720fe.js",
+    "src": ".svelte-kit/runtime/client/start.js",
+    "isEntry": true,
+    "imports": [
+      "_vendor-cf4817b6.js"
+    ],
+    "dynamicImports": [
+      ".svelte-kit/runtime/components/layout.svelte",
+      ".svelte-kit/runtime/components/error.svelte",
+      "src/routes/index.svelte",
+      "src/routes/room-[id]-[capacity].svelte",
+      "src/routes/test.svelte"
+    ]
+  },
+  ".svelte-kit/runtime/components/layout.svelte": {
+    "file": "layout.svelte-43e0c4cb.js",
+    "src": ".svelte-kit/runtime/components/layout.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-cf4817b6.js"
+    ]
+  },
+  ".svelte-kit/runtime/components/error.svelte": {
+    "file": "error.svelte-0d72735e.js",
+    "src": ".svelte-kit/runtime/components/error.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-cf4817b6.js"
+    ]
+  },
+  "src/routes/index.svelte": {
+    "file": "pages/index.svelte-2fe49ceb.js",
+    "src": "src/routes/index.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-cf4817b6.js",
+      "_store-a4ab9e03.js"
+    ]
+  },
+  "src/routes/room-[id]-[capacity].svelte": {
+    "file": "pages/room-_id_-_capacity_.svelte-de85108f.js",
+    "src": "src/routes/room-[id]-[capacity].svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-cf4817b6.js",
+      "_store-a4ab9e03.js"
+    ],
+    "css": [
+      "assets/pages/room-_id_-_capacity_.svelte-30827561.css"
+    ]
+  },
+  "src/routes/test.svelte": {
+    "file": "pages/test.svelte-a63b5759.js",
+    "src": "src/routes/test.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-cf4817b6.js"
+    ],
+    "css": [
+      "assets/pages/test.svelte-cda4fd2d.css"
+    ]
+  },
+  "_vendor-cf4817b6.js": {
+    "file": "chunks/vendor-cf4817b6.js"
+  },
+  "_store-a4ab9e03.js": {
+    "file": "chunks/store-a4ab9e03.js",
+    "imports": [
+      "_vendor-cf4817b6.js"
+    ]
+  }
+}

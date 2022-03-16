@@ -6,14 +6,15 @@
     "client": "npm run child --dir=./client/",
     "server": "npm run child --dir=./server/",
     "tests": "npm run child --dir=./tests/",
-    "setup": "npm run tests setup && npm run client setup && npm run server setup",
     "test": "npm run tests test",
-    "dev": "npm run client dev & npm run server dev",
+    "dev": "npm run client dev & npm run server dev & ./node_modules/.bin/nodemon",
     "build": "npm run server build && npm run client build",
-    "cleanup": "npm run --prefix ./client/ cleanup && npm run --prefix ./server/ cleanup && rm -rf ./build/ "
+    "cleanup": "npm run --prefix ./client/ cleanup && npm run --prefix ./server/ cleanup && rm -rf ./build/ ",
+    "setup": "npm run tests setup && npm run client setup && npm run server setup"
   },
   "devDependencies": {
     "npm": "^8.3.1",
+    "nodemon": "^2.0.15",
     "@types/socket.io-client": "^3.0.0",
     "socket.io-client": "^4.4.1",
     "socket.io": "^4.4.1",
