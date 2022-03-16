@@ -9,18 +9,16 @@
     TLayerConfig,
   } from "$lib/shared/graph/graphConfigs";
   import { getConnectionStyle } from "$lib/utils";
-  import { afterUpdate, onMount } from "svelte";
+  import { afterUpdate } from "svelte";
+
+  export let capacity: number;
 
   const column = true;
-  const layer = true;
   const node = true;
-  const connection = true;
-  const connections = true;
   const output = true;
 
-  const capacity = $page.params.capacity;
   let graphConfig: TGraphConfig = undefined;
-  $: graphConfig = $graphFactory.getConfig(parseInt(capacity));
+  $: graphConfig = $graphFactory.getConfig(capacity);
 
   let layerMap: Map<EParticipantRole, TLayerConfig> = undefined;
   $: layerMap = $graphFactory.getLayerConfigMap(graphConfig);
@@ -67,13 +65,6 @@
     display: inline-block;
     margin: auto;
     vertical-align: middle;
-  }
-  .connections {
-  }
-
-  .connection {
-    width: 100px;
-    height: 100px;
   }
   .node {
     width: 100px;

@@ -5,7 +5,7 @@ import type { Express } from 'express';
 import livereload from 'livereload';
 // @ts-ignore
 import connectLivereload from 'connect-livereload';
-import process from './processType.js';
+import process from '../shared/common/processUtils';
 
 export function setUpLiveReloadForDevelopment(app: Express) {
   if (process.env.NODE_ENV !== 'dev') return;
@@ -21,6 +21,3 @@ export function setUpLiveReloadForDevelopment(app: Express) {
     }, 20);
   });
 }
-
-export const isDevelopmentMode = process.env.NODE_ENV === 'dev';
-export const devConsole: Console | undefined = isDevelopmentMode ? console : undefined;

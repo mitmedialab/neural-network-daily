@@ -4,7 +4,7 @@
   "scripts": {
     "setup": "npm install",
     "compile:ts": "./node_modules/.bin/tsc -p ./tsconfig.json",
-    "copy:dependencies": "cp -r ./node_modules/ ../build/server/node_modules/",
+    "copy:dependencies": "cp -r ./node_modules ../build/server/",
     "node:without:requiring:js:extension": "node --experimental-modules --es-module-specifier-resolution=node",
     "server": "npm run node:without:requiring:js:extension -- ../build/server/src/server.js",
     "dev:server": "NODE_ENV=dev npm run server",
