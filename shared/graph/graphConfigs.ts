@@ -3,7 +3,7 @@ import EParticipantRole from "../enums/EParticipantRole"
 export type TLayerConfig = {
   nodeCount: number,
   outputsPerNode: number,
-  packetWidth: number,
+  contourOuputWidth: number,
 }
 
 export type TGraphConfig = Record<EParticipantRole, TLayerConfig | undefined> & {
@@ -22,7 +22,7 @@ abstract class BaseConfig implements TGraphConfig {
   [EParticipantRole.OutputLayer]: TLayerConfig | undefined = {
     nodeCount: 1,
     outputsPerNode: 1,
-    packetWidth: 1,
+    contourOuputWidth: 1,
   };
   [EParticipantRole.Facilitator]: TLayerConfig | undefined = undefined;
 }
@@ -33,12 +33,12 @@ export class Capacity6 extends BaseConfig {
   [EParticipantRole.InputLayer] = {
     nodeCount: 3,
     outputsPerNode: 2,
-    packetWidth: 2,
+    contourOuputWidth: 2,
   };
   [EParticipantRole.HiddenLayer1] = {
     nodeCount: 2,
     outputsPerNode: 1,
-    packetWidth: 2,
+    contourOuputWidth: 2,
   };
   [EParticipantRole.HiddenLayer2] = undefined;
 }
@@ -49,12 +49,12 @@ export class Capacity7 extends BaseConfig {
   [EParticipantRole.InputLayer] = {
     nodeCount: 4,
     outputsPerNode: 2,
-    packetWidth: 2,
+    contourOuputWidth: 2,
   };
   [EParticipantRole.HiddenLayer1] = {
     nodeCount: 2,
     outputsPerNode: 1,
-    packetWidth: 2,
+    contourOuputWidth: 2,
   };
   [EParticipantRole.HiddenLayer2] = undefined;
 }
@@ -65,17 +65,17 @@ export class Capacity8 extends BaseConfig {
   [EParticipantRole.InputLayer] = {
     nodeCount: 4,
     outputsPerNode: 2,
-    packetWidth: 2,
+    contourOuputWidth: 2,
   };
   [EParticipantRole.HiddenLayer1] = {
     nodeCount: 2,
     outputsPerNode: 1,
-    packetWidth: 3,
+    contourOuputWidth: 3,
   };
   [EParticipantRole.HiddenLayer2] = {
     nodeCount: 1,
     outputsPerNode: 1,
-    packetWidth: 4,
+    contourOuputWidth: 4,
   };
 }
 
@@ -85,17 +85,17 @@ export class Capacity9 extends BaseConfig {
   [EParticipantRole.InputLayer] = {
     nodeCount: 4,
     outputsPerNode: 3,
-    packetWidth: 3,
+    contourOuputWidth: 3,
   };
   [EParticipantRole.HiddenLayer1] = {
     nodeCount: 3,
     outputsPerNode: 1,
-    packetWidth: 2,
+    contourOuputWidth: 2,
   };
   [EParticipantRole.HiddenLayer2] = {
     nodeCount: 1,
     outputsPerNode: 1,
-    packetWidth: 4,
+    contourOuputWidth: 4,
   };
 }
 
@@ -105,17 +105,17 @@ export class Capacity10 extends BaseConfig {
   [EParticipantRole.InputLayer] = {
     nodeCount: 4,
     outputsPerNode: 4,
-    packetWidth: 4,
+    contourOuputWidth: 4,
   };
   [EParticipantRole.HiddenLayer1] = {
     nodeCount: 4,
     outputsPerNode: 1,
-    packetWidth: 2,
+    contourOuputWidth: 2,
   };
   [EParticipantRole.HiddenLayer2] = {
     nodeCount: 1,
     outputsPerNode: 1,
-    packetWidth: 4,
+    contourOuputWidth: 4,
   };
 }
 
@@ -125,17 +125,17 @@ export class Capacity11 extends BaseConfig {
   [EParticipantRole.InputLayer] = {
     nodeCount: 5,
     outputsPerNode: 4,
-    packetWidth: 4,
+    contourOuputWidth: 4,
   };
   [EParticipantRole.HiddenLayer1] = {
     nodeCount: 4,
     outputsPerNode: 1,
-    packetWidth: 2,
+    contourOuputWidth: 2,
   };
   [EParticipantRole.HiddenLayer2] = {
     nodeCount: 1,
     outputsPerNode: 1,
-    packetWidth: 4,
+    contourOuputWidth: 4,
   };
 }
 
@@ -145,16 +145,16 @@ export class Capacity12 extends BaseConfig {
   [EParticipantRole.InputLayer] = {
     nodeCount: 6,
     outputsPerNode: 4,
-    packetWidth: 4,
+    contourOuputWidth: 4,
   };
   [EParticipantRole.HiddenLayer1] = {
     nodeCount: 4,
     outputsPerNode: 1,
-    packetWidth: 2,
+    contourOuputWidth: 2,
   };
   [EParticipantRole.HiddenLayer2] = {
     nodeCount: 1,
     outputsPerNode: 1,
-    packetWidth: 4,
+    contourOuputWidth: 4,
   };
 }

@@ -1,5 +1,5 @@
 import util from 'util';
-import { deepToString, waitForCondition } from "shared/common/utils";
+import { deepToString, range, waitForCondition } from "shared/common/utils";
 import TContour, { TCoordinate } from "shared/contours/TContour";
 import { TGraphConfig, TGraphMap, TLayerConfig } from "shared/graph/graphConfigs";
 import GraphFactory from "shared/graph/GraphFactory";
@@ -10,6 +10,8 @@ import { TestingServer } from "utils";
 import EParticipantRole from "../shared/enums/EParticipantRole";
 import C2CNode, { TDataPacket, TLayerInfo } from "../shared/graph/C2CNode";
 import establishSocketServer, { getSizeOfRoom, getTotalNumberOfSockets, roomExists } from "./shared/sockets/socketManagement";
+import TContourSelection from 'shared/contours/TContourSelection';
+import EImageClassification from 'shared/enums/EImageClassification';
 
 describe("Full Backend", () => {
   const capacities = [6, 7, 8, 9, 10, 11, 12];
@@ -48,9 +50,11 @@ describe("Full Backend", () => {
   });
 
   afterAll(async () => {
-    //await waitForCondition(() => getTotalNumberOfSockets(socketServer) === 0);
-    socketServer.close();
+    await waitForCondition(() => getTotalNumberOfSockets(socketServer) === 0);
+    let socketServerClosed = false;
+    socketServer.close(() => { socketServerClosed = true; });
     testServer.close();
+    await waitForCondition(() => socketServerClosed);
   })
 
   test.each(capacities)("Room Management", async (capacity: number) => {
@@ -148,7 +152,7 @@ describe("Full Backend", () => {
     const noMoreSockets = (): boolean => getTotalNumberOfSockets(socketServer) === 0;
 
     await waitForCondition(() => roomToZero() && roomDestroyed() && noMoreSockets());
-  }, 2000);
+  }, 5000);
 
   const getContourData = (indexWithinLayer: number, config: TGraphConfig): TContour[] => {
     const author = { layer: EParticipantRole.InputLayer, indexWithinLayer };
@@ -163,17 +167,8 @@ describe("Full Backend", () => {
     return contours;
   }
 
-  const getContourSelectionData = (indexWithinLayer: number, config: TGraphConfig): TContour[] => {
-    const author = { layer: EParticipantRole.InputLayer, indexWithinLayer };
-    const nextNodeCount = (config[EParticipantRole.HiddenLayer1] as TLayerConfig).nodeCount;
-    const contours: TContour[] = [];
-    for (let i = 0; i < nextNodeCount; i++) {
-      const value = indexWithinLayer * nextNodeCount + i;
-      const path: TCoordinate[] = [{ x: value, y: value }];
-      const contour: TContour = { author, path };
-      contours.push(contour);
-    }
-    return contours;
+  const getContourSelectionData = (nodeInfo: TLayerInfo, config: TGraphConfig): TContourSelection[] => {
+    return [];
   }
 
   test.each(capacities)("Data Sending", async (capacity: number) => {
@@ -187,6 +182,7 @@ describe("Full Backend", () => {
       node?: C2CNode<TCombined, TCombined>;
       socket: ClientSocketWrapper<TCombined>;
       receivedCount: number;
+      prediction?: EImageClassification;
     }
 
     const room = await startRoom(facilitatorSocket, capacity);
@@ -201,35 +197,25 @@ describe("Full Backend", () => {
     });
 
     await waitForCondition(() => !students.some(student => student.node === undefined));
+
     const studentGraph = new Map<EParticipantRole, TFakeStudent[]>();
     factory.layers.filter(layer => config[layer]).forEach(layer => {
-      const sorter = (a: TFakeStudent, b: TFakeStudent) => (a.node as TLayerInfo).indexWithinLayer - (b.node as TLayerInfo).indexWithinLayer;
+      type TNode = TLayerInfo;
+      const sorter = (a: TFakeStudent, b: TFakeStudent) => (a.node as TNode).indexWithinLayer - (b.node as TNode).indexWithinLayer;
       studentGraph.set(layer, students.filter(student => student.node?.layer === layer).sort(sorter));
     });
-
-    const reset = () => {
-      Array.from(studentGraph.values()).forEach(students => {
-        students.forEach(student => {
-          student.receivedCount = 0;
-        });
-      });
-    }
 
     let currentSendingLayer = EParticipantRole.InputLayer;
     let currentReceivingLayer = EParticipantRole.HiddenLayer1;
 
     const getWaitingCondition = (): Promise<void>[] => {
       const sendingNodesCount = studentGraph.get(currentSendingLayer)?.length as number;
-      const waitingConditions = Array<Promise<void>>();
-      Array.from(studentGraph.values()).forEach(students => {
-        students.forEach(student => {
-          waitingConditions.push(waitForCondition((): boolean => {
-            const expected = student.node?.layer === currentSendingLayer ? sendingNodesCount - 1 : sendingNodesCount;
-            return student.receivedCount === expected;
-          }));
+      return Array.from(studentGraph.values()).flat().map(student => {
+        return waitForCondition((): boolean => {
+          const expected = student.node?.layer === currentSendingLayer ? sendingNodesCount - 1 : sendingNodesCount;
+          return student.receivedCount === expected;
         });
       });
-      return waitingConditions;
     }
 
     for (const students of studentGraph.values()) {
@@ -238,29 +224,121 @@ describe("Full Backend", () => {
           student.receivedCount++;
           student.node?.trySetInput(data);
         });
+        student.socket.on("prediction", (packet: TDataPacket<TCombined>) => {
+          student.prediction = packet.data[0] as EImageClassification;
+        });
       }
     }
 
-    const inputs = studentGraph.get(EParticipantRole.InputLayer)?.entries() as IterableIterator<[number, TFakeStudent]>;
-    for (const [index, student] of inputs) {
-      const info: TLayerInfo = { layer: EParticipantRole.InputLayer, indexWithinLayer: index };
+    type TIterableLayer = IterableIterator<[number, TFakeStudent]>;
+
+    const inputNodes = studentGraph.get(currentSendingLayer)?.entries() as TIterableLayer;
+    for (const [index, student] of inputNodes) {
+      const info: TLayerInfo = { layer: currentSendingLayer, indexWithinLayer: index };
       const data: TContour[] = getContourData(index, config);
       student.socket.send("propogate", [{ info, data }]);
     }
 
     await Promise.all(getWaitingCondition());
+
+    const reset = () => {
+      for (const students of studentGraph.values()) {
+        students.forEach(student => student.receivedCount = 0);
+      }
+    }
+
     reset();
 
-    Array.from(studentGraph.entries()).forEach(([layer, students]) => {
-      const contourByNode: TContour[][] = Array.from(Array(config[EParticipantRole.InputLayer]?.nodeCount).keys()).map(nodeIndex => getContourData(nodeIndex, config));
-      if (layer === currentReceivingLayer) {
-        students.forEach((student, index) => {
-          expect(student.node?.input).toEqual(contourByNode.map(contours => contours[index]));
-        })
-      }
-    });
+    const { nodeCount } = config[currentSendingLayer] as TLayerConfig;
+    const inputNodeIndexes = Array.from(range(0, nodeCount));
+    const contourByInputNode: TContour[][] = inputNodeIndexes.map(nodeIndex => getContourData(nodeIndex, config));
+    for (const [index, hiddenLayer1Student] of studentGraph.get(currentReceivingLayer)?.entries() as TIterableLayer) {
+      expect(hiddenLayer1Student.node?.input).toEqual(contourByInputNode.map(contours => contours[index]));
+    }
 
-    // now check for contour selection 
+    currentSendingLayer = currentReceivingLayer;
+    expect(currentSendingLayer).toBe(EParticipantRole.HiddenLayer1);
+
+    currentReceivingLayer = factory.getNextLayer(config, { layer: currentReceivingLayer, indexWithinLayer: -1 });
+    expect(currentReceivingLayer === EParticipantRole.HiddenLayer2 || currentReceivingLayer === EParticipantRole.OutputLayer).toBe(true);
+
+    const hiddenLayer1Nodes = studentGraph.get(currentSendingLayer)?.entries() as TIterableLayer;
+    for (const [index, student] of hiddenLayer1Nodes) {
+      const info: TLayerInfo = { layer: currentSendingLayer, indexWithinLayer: index };
+      const data: TContourSelection[] = [{
+        contours: (student.node?.input as TContour[]).slice(0, config[currentSendingLayer]?.contourOuputWidth),
+        selector: info,
+      }];
+      student.socket.send("propogate", [{ info, data }]);
+    }
+
+    await Promise.all(getWaitingCondition());
+
+    reset();
+
+    const receivingNodes = studentGraph.get(currentReceivingLayer)?.entries() as TIterableLayer;
+    for (const [_, receivingStudent] of receivingNodes) {
+      const input: TContourSelection[] = receivingStudent.node?.input as TContourSelection[];
+      expect(input.length).toBe(config[currentSendingLayer]?.nodeCount);
+      input.forEach((selection, index) => {
+        expect(selection.selector).toEqual({ layer: currentSendingLayer, indexWithinLayer: index });
+        const previousContourWidth: number = config[currentSendingLayer]?.contourOuputWidth as number;
+        expect(selection.contours.length).toBe(previousContourWidth);
+        const inputLayerContourWidth: number = config[EParticipantRole.InputLayer]?.contourOuputWidth as number;
+        const expectedCountours: TContour[] = Array.from(range(index, previousContourWidth, inputLayerContourWidth)).map((value, index) => {
+          return {
+            author: { layer: EParticipantRole.InputLayer, indexWithinLayer: index },
+            path: [{ x: value, y: value }]
+          };
+        });
+        expect(selection.contours).toEqual(expectedCountours);
+      });
+    }
+
+    const outputLayerNodes = (studentGraph.get(EParticipantRole.OutputLayer) as TFakeStudent[]);
+    expect(outputLayerNodes.length).toBe(1);
+    const outputNode = outputLayerNodes[0];
+
+    if (currentReceivingLayer != EParticipantRole.OutputLayer) {
+      currentSendingLayer = currentReceivingLayer;
+      expect(currentSendingLayer).toBe(EParticipantRole.HiddenLayer2);
+
+      currentReceivingLayer = factory.getNextLayer(config, { layer: currentReceivingLayer, indexWithinLayer: -1 });
+      expect(currentReceivingLayer).toBe(EParticipantRole.OutputLayer);
+
+      const hiddenLayer2Nodes = studentGraph.get(currentSendingLayer)?.entries() as TIterableLayer;
+      for (const [index, student] of hiddenLayer2Nodes) {
+        const info: TLayerInfo = { layer: currentSendingLayer, indexWithinLayer: index };
+        const contours: TContour[] = [];
+        (student.node?.input as TContourSelection[]).forEach(selection => contours.push(...selection.contours));
+        const data: TContourSelection[] = [{
+          contours: contours.slice(0, config[currentSendingLayer]?.contourOuputWidth),
+          selector: info,
+        }];
+        student.socket.send("propogate", [{ info, data }]);
+      }
+
+      await Promise.all(getWaitingCondition());
+
+      expect(outputNode.node?.input.length).toBe(config[currentSendingLayer]?.nodeCount);
+      const expectedCountourCount = 4;
+      let actualCountourCount = 0;
+      (outputNode.node?.input as TContourSelection[]).forEach(selection => actualCountourCount += selection.contours.length);
+      expect(actualCountourCount).toBe(expectedCountourCount);
+    }
+
+    const prediction = EImageClassification.Cat;
+    outputNode.socket.send("propogate", [{
+      info: { layer: EParticipantRole.OutputLayer, indexWithinLayer: 0 },
+      data: [prediction]
+    }]);
+
+    await Promise.all(Array.from(studentGraph.values()).flat().map(student => {
+      waitForCondition(() => {
+        if (student.node?.layer === EParticipantRole.OutputLayer) return true;
+        return student.prediction === prediction;
+      });
+    }));
 
     sockets.forEach(socket => socket.close());
   }, 10000);

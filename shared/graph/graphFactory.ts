@@ -99,6 +99,19 @@ class GraphFactory {
     throw new Error("Could not identify layer");
   }
 
+  getNextLayer(graphConfig: TGraphConfig, info: TLayerInfo): EParticipantRole {
+    const queryLayerIndex = this.layers.indexOf(info.layer);
+    const lastLayerIndex = this.layers.length - 1;
+    if (queryLayerIndex >= lastLayerIndex) throw new Error(`No next layer for layer for ${info.layer}`);
+    for (let layerIndex = queryLayerIndex + 1; layerIndex <= lastLayerIndex; layerIndex++) {
+      const layer: EParticipantRole = this.layers[layerIndex];
+      if (graphConfig[layer] !== undefined) {
+        return layer;
+      }
+    }
+    throw new Error("Could not identify layer");
+  }
+
   buildNodeForGraph
     <TInput, TOutput>(
       graphConfig: TGraphConfig,

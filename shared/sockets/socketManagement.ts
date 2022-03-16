@@ -70,7 +70,11 @@ function establishSocketServer(server: httpServer | httpsServer): GenericServer<
 
     socket.on("propogate", (data: TDataPacket<TCombined>) => {
       if (socket.data.roomID) {
-        socket.to(socket.data.roomID as string).emit("update", data);
+        if (socket.data.participantRole === EParticipantRole.OutputLayer) {
+          socket.to(socket.data.roomID as string).emit("prediction", data);
+        } else {
+          socket.to(socket.data.roomID as string).emit("update", data);
+        }
       }
     });
 

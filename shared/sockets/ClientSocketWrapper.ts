@@ -82,6 +82,14 @@ class ClientSocketWrapper<TDynamic> {
           });
         };
         return true;
+      case "prediction":
+        if (!this.checkType<updateType>(fn)) throw new Error(mismatchError());
+        if (this.subscribe(name, fn)) {
+          this.socket.on("prediction", (packet: TDataPacket<any>) => {
+            this.subscriptions.get(name)?.forEach(func => (func as ServerToClientEvents<TDynamic>["prediction"])(packet));
+          });
+        };
+        return true;
     }
   }
 

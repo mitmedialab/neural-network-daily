@@ -87,7 +87,7 @@ class C2CNode<TInput, TOutput>
     return false;
   }
   getOuput(): TDataPacket<TOutput> {
-    if (this.output.includes(undefined)) { throw new Error("Output is undefined!") };
+    if (this.output.includes(undefined)) { throw new Error("Output contains undefined!") };
     return { info: { layer: this.layer, indexWithinLayer: this.layer }, data: this.output as TOutput[] }
   }
   setOutput(index: number, entry: TOutput): void {

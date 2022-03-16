@@ -10,6 +10,7 @@ export interface ServerToClientEvents<TDynamic> {
   update: <T extends TDynamic>(data: TDataPacket<T>) => void;
   start: () => void;
   connect: () => void;
+  prediction: <T extends TDynamic>(data: TDataPacket<T>) => void;
 }
 
 export interface ClientToServerEvents<TDynamic> {

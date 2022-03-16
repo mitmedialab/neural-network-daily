@@ -22,3 +22,18 @@ export function removeItem<T>(arr: Array<T>, value: T): Array<T> {
 export function deepToString(obj: any): string {
   return util.inspect(obj, { showHidden: false, depth: null, colors: true });
 }
+
+export function range(start: number, length: number, step: number = 1) {
+  const indices: number[] = Array.from({ length }, (_, i) => i * step + start);
+  let index = 0;
+  return {
+    [Symbol.iterator]() {
+      return this;
+    },
+    next() {
+      const current = { value: indices[index], done: (index >= length) };
+      index++;
+      return current;
+    }
+  }
+}
