@@ -35,14 +35,14 @@ class GraphFactory {
     return map;
   }
 
-  getEmptyGraphMap(config: TGraphConfig): TGraphMap {
+  getEmptyGraphMap(config: TGraphConfig): TGraphMap<any> {
     const map = new Map<EParticipantRole, Map<number, string>>();
     const validLayers = this.layers.filter(value => config[value] !== undefined);
     validLayers.forEach(value => map.set(value, new Map<number, string>()));
     return map;
   }
 
-  getNumberOfActiveNodes(map: TGraphMap) {
+  getNumberOfActiveNodes(map: TGraphMap<any>) {
     let count = 0;
     for (const entry of map) {
       const [_, layerMap]: [EParticipantRole, Map<number, string>] = entry;
@@ -51,13 +51,13 @@ class GraphFactory {
     return count;
   }
 
-  tryAddToFirstEmptyNode(map: TGraphMap, config: TGraphConfig, id: string): { success: boolean; info: TLayerInfo } {
+  tryAddToFirstEmptyNode<TData>(map: TGraphMap<TData>, config: TGraphConfig, info: TData): { success: boolean; info: TLayerInfo } {
     for (const entry of map) {
-      const [layerType, layerMap]: [EParticipantRole, Map<number, string>] = entry;
+      const [layerType, layerMap]: [EParticipantRole, Map<number, TData>] = entry;
       const layerCapacity = config[layerType]?.nodeCount ?? 0;
       for (let nodeIndex = 0; nodeIndex < layerCapacity; nodeIndex++) {
         if (!layerMap.has(nodeIndex)) {
-          layerMap.set(nodeIndex, id);
+          layerMap.set(nodeIndex, info);
           return { success: true, info: { layer: layerType, indexWithinLayer: nodeIndex } };
         }
       }
@@ -65,7 +65,7 @@ class GraphFactory {
     return { success: false, info: { layer: -1, indexWithinLayer: -1 } };
   }
 
-  removeNode(map: TGraphMap, node: TLayerInfo): void {
+  removeNode(map: TGraphMap<any>, node: TLayerInfo): void {
     map.get(node.layer)?.delete(node.indexWithinLayer);
   }
 

@@ -23,7 +23,7 @@ export function deepToString(obj: any): string {
   return util.inspect(obj, { showHidden: false, depth: null, colors: true });
 }
 
-export function range(start: number, length: number, step: number = 1): Iterator<number> & { [Symbol.iterator] } {
+export function range(start: number, length: number, step: number = 1): Iterator<number> & { [Symbol.iterator]: any } {
   const indices: number[] = Array.from({ length }, (_, i) => i * step + start);
   let index = 0;
   return {

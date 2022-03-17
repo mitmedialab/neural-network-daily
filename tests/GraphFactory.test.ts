@@ -55,14 +55,14 @@ describe(nameOf(GraphFactory), () => {
   });
 
   test(nameOf(GraphFactory, _function, "getEmptyGraphMap"), () => {
-    const map: TGraphMap = factory.getEmptyGraphMap(six);
+    const map: TGraphMap<any> = factory.getEmptyGraphMap(six);
     expect(map.get(EParticipantRole.InputLayer)).not.toBe(undefined);
     expect(map.get(EParticipantRole.HiddenLayer1)).not.toBe(undefined);
     expect(map.get(EParticipantRole.HiddenLayer2)).toBe(undefined);
     expect(map.get(EParticipantRole.OutputLayer)).not.toBe(undefined);
     expect(factory.getNumberOfActiveNodes(map)).toBe(0);
 
-    const map2: TGraphMap = factory.getEmptyGraphMap(eight);
+    const map2: TGraphMap<any> = factory.getEmptyGraphMap(eight);
     expect(map2.get(EParticipantRole.InputLayer)).not.toBe(undefined);
     expect(map2.get(EParticipantRole.HiddenLayer1)).not.toBe(undefined);
     expect(map2.get(EParticipantRole.HiddenLayer2)).not.toBe(undefined);
@@ -71,7 +71,7 @@ describe(nameOf(GraphFactory), () => {
   });
 
   test(nameOf(GraphFactory, _function, "tryAddToFirstEmptyNode"), () => {
-    const map: TGraphMap = factory.getEmptyGraphMap(six);
+    const map: TGraphMap<any> = factory.getEmptyGraphMap(six);
     const layerConfig = factory.getLayerConfigMap(six);
 
     const addAndCheck = (layer: EParticipantRole) => {
@@ -100,7 +100,7 @@ describe(nameOf(GraphFactory), () => {
   })
 
   test(nameOf(GraphFactory, _function, "removeNode"), () => {
-    const map: TGraphMap = factory.getEmptyGraphMap(six);
+    const map: TGraphMap<any> = factory.getEmptyGraphMap(six);
     const layerConfig = factory.getLayerConfigMap(six);
 
     type TTestState = { [key in EParticipantRole]?: boolean };

@@ -1,4 +1,6 @@
+import type { TSocketInfo } from "../sockets/socketEvents";
 import EParticipantRole from "../enums/EParticipantRole"
+import { TLayerInfo } from "./C2CNode";
 
 export type TLayerConfig = {
   nodeCount: number,
@@ -11,7 +13,9 @@ export type TGraphConfig = Record<EParticipantRole, TLayerConfig | undefined> & 
   depth: number;
 };
 
-export type TGraphMap = Map<EParticipantRole, Map<number, string>>;
+export type TGraphParticipant = (TLayerInfo & TSocketInfo);
+export type TGraphState = TGraphParticipant[];
+export type TGraphMap<TData> = Map<EParticipantRole, Map<number, TData>>;
 
 abstract class BaseConfig implements TGraphConfig {
   abstract capacity: number;

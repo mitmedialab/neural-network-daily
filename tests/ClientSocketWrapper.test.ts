@@ -8,6 +8,7 @@ import { TDataPacket, TLayerInfo } from "../shared/graph/C2CNode";
 import { GenericServerSocket, TJoinRoomResponse, toInfo } from "shared/sockets/socketEvents";
 import EParticipantRole from "../shared/enums/EParticipantRole";
 import { TestingServer } from "utils";
+import GraphFactory from "shared/graph/GraphFactory";
 
 describe(nameOf(ClientSocketWrapper), () => {
   let testServer: TestingServer;
@@ -54,6 +55,8 @@ describe(nameOf(ClientSocketWrapper), () => {
     const tests: Promise<void>[] = [];
     const capacityToSet: number = 10;
     const roomToSet: string = "123";
+    const factory = new GraphFactory();
+    const config = factory.getConfig(capacityToSet);
 
     let start = false;
     serverSocket.on("startRoom", (capacity: number, callback: (roomId: string) => void) => {
@@ -66,17 +69,24 @@ describe(nameOf(ClientSocketWrapper), () => {
     }]);
     tests.push(waitForCondition(() => start));
 
+
     let join = false;
     const responseToSet: TJoinRoomResponse = {
       success: true,
-      layer: EParticipantRole.HiddenLayer2,
-      indexWithinLayer: 1,
+      onSuccess: {
+        assignment: {
+          layer: EParticipantRole.HiddenLayer2,
+          indexWithinLayer: 1,
+        },
+        config,
+        state: []
+      }
     }
-    serverSocket.on("joinRoom", (roomID: string, callback: (response: TJoinRoomResponse) => void) => {
+    serverSocket.on("joinRoom", (roomID: string, name: string, callback: (response: TJoinRoomResponse) => void) => {
       expect(roomID).toBe(roomToSet);
       callback(responseToSet);
     });
-    clientWrapper.send("joinRoom", [roomToSet, (response: TJoinRoomResponse) => {
+    clientWrapper.send("joinRoom", [roomToSet, 'dummyName', (response: TJoinRoomResponse) => {
       expect(response).toEqual(responseToSet);
       join = true;
     }]);

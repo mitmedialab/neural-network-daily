@@ -14,7 +14,7 @@ export type TActivityInstanceInfo = {
 
 export const room = writable<string>();
 export const name = writable<string>();
-export const roomInfo = writable<TGraphConfig>();
+export const capacity = writable<number>();
 export const role = writable<EParticipantRole>();
 export const nodeInfo = writable<TLayerInfo>();
 export const node = writable<C2CNode<TCombined, TCombined>>();

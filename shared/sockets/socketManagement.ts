@@ -4,17 +4,17 @@ import type { Server as httpsServer } from 'https'
 import GuidGenerator from '../common/GuidGenerator';
 import EParticipantRole from '../enums/EParticipantRole';
 import { TCombined } from '../graph/inputOutputs';
-import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData, GenericServer, TJoinRoomResponse, EJoinRoomFailure } from './socketEvents';
-import { TGraphConfig, TGraphMap } from '../graph/graphConfigs';
+import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData, GenericServer, TJoinRoomResponse, EJoinRoomFailure, TSocketInfo } from './socketEvents';
+import { TGraphConfig, TGraphMap, TGraphParticipant, TGraphState } from '../graph/graphConfigs';
 import GraphFactory from '../graph/GraphFactory';
-import { TDataPacket } from '../graph/C2CNode';
+import { TDataPacket, TParticipantInfo } from '../graph/C2CNode';
 import { isDevelopmentMode } from '../common/processUtils';
 
 const testRoom = isDevelopmentMode ? 'test' : undefined;
 
 function establishSocketServer(server: httpServer | httpsServer): GenericServer<TCombined> {
   const graphFactory: GraphFactory = new GraphFactory();
-  type TRoomData = { config: TGraphConfig; graph: TGraphMap };
+  type TRoomData = { config: TGraphConfig; graph: TGraphMap<TSocketInfo> };
   const graphByRoom: Map<string, TRoomData> = new Map<string, TRoomData>();
   const guidGenerator: GuidGenerator = new GuidGenerator();
   const socketServer: GenericServer<TCombined> = new Server<ClientToServerEvents<TCombined>, ServerToClientEvents<TCombined>, InterServerEvents, SocketData>(server);
@@ -29,7 +29,7 @@ function establishSocketServer(server: httpServer | httpsServer): GenericServer<
       if (socket.data.roomID) {
         const { roomID, participantRole, indexWithinLayer } = socket.data;
         if (participantRole !== EParticipantRole.Facilitator) {
-          const graph = graphByRoom.get(roomID)?.graph as TGraphMap;
+          const graph = graphByRoom.get(roomID)?.graph as TGraphMap<TSocketInfo>;
           const node = { layer: participantRole as EParticipantRole, indexWithinLayer: indexWithinLayer as number };
           graphFactory.removeNode(graph, node);
         }
@@ -38,7 +38,7 @@ function establishSocketServer(server: httpServer | httpsServer): GenericServer<
           if (!graphByRoom.delete(roomID)) throw new Error(`Unable to delete room: ${roomID}`);
         }
       }
-    })
+    });
 
     socket.on("startRoom", (capacity: number, callback: (roomID: string) => void) => {
       const roomID: string = guidGenerator.getNext();
@@ -54,19 +54,33 @@ function establishSocketServer(server: httpServer | httpsServer): GenericServer<
       callback(graphByRoom.has(roomID) && roomExists(socketServer, roomID));
     });
 
-    socket.on("joinRoom", (roomID: string, callback: (reponse: TJoinRoomResponse) => void) => {
+    socket.on("joinRoom", (roomID: string, name: string, callback: (reponse: TJoinRoomResponse) => void) => {
       if (graphByRoom.has(roomID)) {
         const { config, graph } = graphByRoom.get(roomID) as TRoomData;
-        const result = graphFactory.tryAddToFirstEmptyNode(graph, config, socket.id);
+        const result = graphFactory.tryAddToFirstEmptyNode(graph, config, { socketID: socket.id, participantName: name });
         const { success } = result;
         if (success) {
           const { layer, indexWithinLayer } = result.info;
+
           socket.data.participantRole = layer;
           socket.data.indexWithinLayer = indexWithinLayer;
           socket.data.roomID = roomID;
           socket.join(roomID);
 
-          callback({ success, indexWithinLayer, layer })
+          const state: TGraphState = [];
+          for (const [layer, layerMap] of graph.entries()) {
+            for (const [indexWithinLayer, info] of layerMap) {
+              state.push({ layer, indexWithinLayer, ...info })
+            }
+          }
+
+          const onSuccess = {
+            assignment: result.info,
+            config,
+            state
+          }
+
+          callback({ success, onSuccess })
         } else {
           callback({ success, failure: EJoinRoomFailure.RoomAtCapacity })
         }

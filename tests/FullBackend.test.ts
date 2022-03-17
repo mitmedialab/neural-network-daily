@@ -18,6 +18,7 @@ describe("Full Backend", () => {
   let factory: GraphFactory;
   let testServer: TestingServer;
   let socketServer: GenericServer<TCombined>;
+  const _n: string = "dummyName";
 
   const getSocket = async (): Promise<ClientSocketWrapper<any>> => {
     let ready = false;
@@ -91,8 +92,8 @@ describe("Full Backend", () => {
   test.each(capacities)("Room Joining", async (capacity: number) => {
     const validateResponse = (response: TJoinRoomResponse) => {
       expect(response.success).toBe(true);
-      expect(response.indexWithinLayer).not.toBe(undefined);
-      expect(response.layer).not.toBe(undefined);
+      expect(response.onSuccess?.assignment.indexWithinLayer).not.toBe(undefined);
+      expect(response.onSuccess?.assignment.layer).not.toBe(undefined);
     };
 
     const confirmFailure = (response: TJoinRoomResponse, reason: EJoinRoomFailure) => {
@@ -115,7 +116,7 @@ describe("Full Backend", () => {
       for (let indexWithinLayer = 0; indexWithinLayer < layerConfig.nodeCount; indexWithinLayer++) {
         let joined = false;
         const studentSocket = studentSockets.pop() as ClientSocketWrapper<any>;
-        studentSocket.send("joinRoom", [room, (response: TJoinRoomResponse) => {
+        studentSocket.send("joinRoom", [room, _n, (response: TJoinRoomResponse) => {
           validateResponse(response);
           expect(toInfo(response)).toEqual({ layer, indexWithinLayer } as TLayerInfo);
           joined = true;
@@ -129,13 +130,13 @@ describe("Full Backend", () => {
     const doomedSocket = await getSocket();
 
     let badCapacityAttempt = false;
-    doomedSocket.send("joinRoom", [room, (response: TJoinRoomResponse) => {
+    doomedSocket.send("joinRoom", [room, _n, (response: TJoinRoomResponse) => {
       confirmFailure(response, EJoinRoomFailure.RoomAtCapacity);
       badCapacityAttempt = true;
     }]);
 
     let badRoomAttempt = false;
-    doomedSocket.send("joinRoom", ["-1", (response: TJoinRoomResponse) => {
+    doomedSocket.send("joinRoom", ["-1", _n, (response: TJoinRoomResponse) => {
       confirmFailure(response, EJoinRoomFailure.NoSuchRoom);
       badRoomAttempt = true;
     }]);
@@ -189,7 +190,7 @@ describe("Full Backend", () => {
 
     const students: TFakeStudent[] = studentSockets.map(socket => {
       const self: TFakeStudent = { socket, node: undefined, receivedCount: 0 };
-      socket.send("joinRoom", [room, (response: TJoinRoomResponse) => {
+      socket.send("joinRoom", [room, _n, (response: TJoinRoomResponse) => {
         expect(response.success).toBe(true);
         self.node = factory.buildNodeForGraph(config, toInfo(response));
       }]);
@@ -250,7 +251,7 @@ describe("Full Backend", () => {
     reset();
 
     const { nodeCount } = config[currentSendingLayer] as TLayerConfig;
-    const inputNodeIndexes = Array.from(range(0, nodeCount));
+    const inputNodeIndexes = Array.from<number>(range(0, nodeCount));
     const contourByInputNode: TContour[][] = inputNodeIndexes.map(nodeIndex => getContourData(nodeIndex, config));
     for (const [index, hiddenLayer1Student] of studentGraph.get(currentReceivingLayer)?.entries() as TIterableLayer) {
       expect(hiddenLayer1Student.node?.input).toEqual(contourByInputNode.map(contours => contours[index]));
@@ -285,7 +286,7 @@ describe("Full Backend", () => {
         const previousContourWidth: number = config[currentSendingLayer]?.contourOuputWidth as number;
         expect(selection.contours.length).toBe(previousContourWidth);
         const inputLayerContourWidth: number = config[EParticipantRole.InputLayer]?.contourOuputWidth as number;
-        const expectedCountours: TContour[] = Array.from(range(index, previousContourWidth, inputLayerContourWidth)).map((value, index) => {
+        const expectedCountours: TContour[] = Array.from<number>(range(index, previousContourWidth, inputLayerContourWidth)).map<TContour>((value, index) => {
           return {
             author: { layer: EParticipantRole.InputLayer, indexWithinLayer: index },
             path: [{ x: value, y: value }]

@@ -10,9 +10,9 @@ type TSocketConfig = {
   onConnect?: () => void;
 }
 
-class ClientSocketWrapper<TDynamic> {
-  subscriptions: Map<keyof ServerToClientEvents<TDynamic>, TClientsideFunction<TDynamic>[]>;
-  socket: Socket<ServerToClientEvents<TDynamic>, ClientToServerEvents<TDynamic>>;
+class ClientSocketWrapper<TPacketData> {
+  subscriptions: Map<keyof ServerToClientEvents<TPacketData>, TClientsideFunction<TPacketData>[]>;
+  socket: Socket<ServerToClientEvents<TPacketData>, ClientToServerEvents<TPacketData>>;
 
   static FromExisting<TOriginal, TDynamic extends TOriginal>(socket: GenericClientSocket<TOriginal>): ClientSocketWrapper<TDynamic> {
     return new ClientSocketWrapper<TDynamic>(socket as GenericClientSocket<TDynamic>);
@@ -25,8 +25,8 @@ class ClientSocketWrapper<TDynamic> {
     return wrapper;
   }
 
-  constructor(socket: Socket<ServerToClientEvents<TDynamic>, ClientToServerEvents<TDynamic>>) {
-    this.subscriptions = new Map<keyof ServerToClientEvents<TDynamic>, TClientsideFunction<TDynamic>[]>();
+  constructor(socket: Socket<ServerToClientEvents<TPacketData>, ClientToServerEvents<TPacketData>>) {
+    this.subscriptions = new Map<keyof ServerToClientEvents<TPacketData>, TClientsideFunction<TPacketData>[]>();
     this.socket = socket;
   }
 
@@ -34,7 +34,7 @@ class ClientSocketWrapper<TDynamic> {
     this.socket.close();
   }
 
-  subscribe<TName extends keyof ServerToClientEvents<TDynamic>>(name: TName, fn: ServerToClientEvents<TDynamic>[TName]): boolean {
+  subscribe<TName extends keyof ServerToClientEvents<TPacketData>>(name: TName, fn: ServerToClientEvents<TPacketData>[TName]): boolean {
     if (this.subscriptions.has(name)) {
       this.subscriptions.get(name)?.push(fn);
       return false;
@@ -44,19 +44,19 @@ class ClientSocketWrapper<TDynamic> {
     }
   }
 
-  unsubscribe<TName extends keyof ServerToClientEvents<TDynamic>>(name: TName, fn: ServerToClientEvents<TDynamic>[TName]) {
+  unsubscribe<TName extends keyof ServerToClientEvents<TPacketData>>(name: TName, fn: ServerToClientEvents<TPacketData>[TName]) {
     const callbacksForEvent = this.subscriptions.get(name);
     if (callbacksForEvent) {
       removeItem(callbacksForEvent, fn);
     }
   }
 
-  on<TName extends keyof ServerToClientEvents<TDynamic>>(name: TName, fn: ServerToClientEvents<TDynamic>[TName]): boolean {
-    const key: keyof ServerToClientEvents<TDynamic> = name;
+  on<TName extends keyof ServerToClientEvents<TPacketData>>(name: TName, fn: ServerToClientEvents<TPacketData>[TName]): () => void {
+    const key: keyof ServerToClientEvents<TPacketData> = name;
     const mismatchError = () => `Passed in function (${fn.name ?? 'anonymous'}) does not match signature for ${name}`;
-    type startType = ServerToClientEvents<TDynamic>["start"];
-    type updateType = ServerToClientEvents<TDynamic>["update"];
-    type connectType = ServerToClientEvents<TDynamic>["connect"];
+    type startType = ServerToClientEvents<TPacketData>["start"];
+    type updateType = ServerToClientEvents<TPacketData>["update"];
+    type connectType = ServerToClientEvents<TPacketData>["connect"];
     switch (key) {
       case "connect":
         if (!this.checkType<connectType>(fn)) throw new Error(mismatchError());
@@ -65,69 +65,69 @@ class ClientSocketWrapper<TDynamic> {
             this.subscriptions.get(name)?.forEach(func => (func as connectType)());
           });
         }
-        return true;
+        return () => this.unsubscribe(name, fn);
       case "start":
         if (!this.checkType<startType>(fn)) throw new Error(mismatchError());
         if (this.subscribe(name, fn)) {
           this.socket.on("start", () => {
-            this.subscriptions.get(name)?.forEach(func => (func as ServerToClientEvents<TDynamic>["start"])());
+            this.subscriptions.get(name)?.forEach(func => (func as ServerToClientEvents<TPacketData>["start"])());
           });
         };
-        return true;
+        return () => this.unsubscribe(name, fn);
       case "update":
         if (!this.checkType<updateType>(fn)) throw new Error(mismatchError());
         if (this.subscribe(name, fn)) {
           this.socket.on("update", (packet: TDataPacket<any>) => {
-            this.subscriptions.get(name)?.forEach(func => (func as ServerToClientEvents<TDynamic>["update"])(packet));
+            this.subscriptions.get(name)?.forEach(func => (func as ServerToClientEvents<TPacketData>["update"])(packet));
           });
         };
-        return true;
+        return () => this.unsubscribe(name, fn);
       case "prediction":
         if (!this.checkType<updateType>(fn)) throw new Error(mismatchError());
         if (this.subscribe(name, fn)) {
           this.socket.on("prediction", (packet: TDataPacket<any>) => {
-            this.subscriptions.get(name)?.forEach(func => (func as ServerToClientEvents<TDynamic>["prediction"])(packet));
+            this.subscriptions.get(name)?.forEach(func => (func as ServerToClientEvents<TPacketData>["prediction"])(packet));
           });
         };
-        return true;
+        return () => this.unsubscribe(name, fn);
     }
   }
 
-  send<TName extends keyof ClientToServerEvents<TDynamic>>(name: TName, params: Parameters<ClientToServerEvents<TDynamic>[TName]>): boolean {
-    const key: keyof ClientToServerEvents<TDynamic> = name;
+  send<TName extends keyof ClientToServerEvents<TPacketData>>(name: TName, params: Parameters<ClientToServerEvents<TPacketData>[TName]>): boolean {
+    const key: keyof ClientToServerEvents<TPacketData> = name;
     const mismatchError = () => `Passed in parameters (${Object.keys(params)}) does not match signature for ${name}`;
 
     switch (key) {
       case "joinRoom": {
-        type type = Parameters<ClientToServerEvents<TDynamic>["joinRoom"]>;
+        type type = Parameters<ClientToServerEvents<TPacketData>["joinRoom"]>;
         const castedParams: type = params as any as type;
         if (castedParams === null) throw new Error(mismatchError());
         this.socket.emit("joinRoom", ...castedParams);
         return true;
       }
       case "startRoom": {
-        type type = Parameters<ClientToServerEvents<TDynamic>["startRoom"]>;
+        type type = Parameters<ClientToServerEvents<TPacketData>["startRoom"]>;
         const castedParams: type = params as any as type;
         if (castedParams === null) throw new Error(mismatchError());
         this.socket.emit("startRoom", ...castedParams);
         return true;
       }
       case "checkRoom": {
-        type type = Parameters<ClientToServerEvents<TDynamic>["checkRoom"]>;
+        type type = Parameters<ClientToServerEvents<TPacketData>["checkRoom"]>;
         const castedParams: type = params as any as type;
         if (castedParams === null) throw new Error(mismatchError());
         this.socket.emit("checkRoom", ...castedParams);
         return true;
       }
       case "propogate": {
-        type type = Parameters<ClientToServerEvents<TDynamic>["propogate"]>;
+        type type = Parameters<ClientToServerEvents<TPacketData>["propogate"]>;
         const castedParams: type = params as any as type;
         if (castedParams === null) throw new Error(mismatchError());
         this.socket.emit("propogate", ...castedParams);
         return true;
       }
       case "testing_getRoomCounts": {
-        type type = Parameters<ClientToServerEvents<TDynamic>["testing_getRoomCounts"]>;
+        type type = Parameters<ClientToServerEvents<TPacketData>["testing_getRoomCounts"]>;
         const castedParams: type = params as any as type;
         if (castedParams === null) throw new Error(mismatchError());
         this.socket.emit("testing_getRoomCounts", ...castedParams);

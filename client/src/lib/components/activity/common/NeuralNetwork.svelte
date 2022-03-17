@@ -1,17 +1,23 @@
 <script lang="ts">
-  import { page } from "$app/stores";
   import { graphFactory } from "$lib/stores/graphStore";
   import type EParticipantRole from "$lib/shared/enums/EParticipantRole";
-  import type { TConnectionInfo } from "$lib/shared/graph/C2CNode";
+  import type {
+    TConnectionInfo,
+    TLayerInfo,
+    TParticipantInfo,
+  } from "$lib/shared/graph/C2CNode";
   import type C2CNode from "$lib/shared/graph/C2CNode";
   import type {
     TGraphConfig,
+    TGraphParticipant,
     TLayerConfig,
   } from "$lib/shared/graph/graphConfigs";
   import { getConnectionStyle } from "$lib/utils";
   import { afterUpdate } from "svelte";
 
   export let capacity: number;
+  export let self: TGraphParticipant;
+  export let others: TGraphParticipant[];
 
   const column = true;
   const node = true;

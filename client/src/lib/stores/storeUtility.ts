@@ -1,5 +1,5 @@
 import { writable, get } from 'svelte/store';
-import type { Writable } from 'svelte/store';
+import type { Writable, Readable } from 'svelte/store';
 
 const appNamePrefix = "Contours2Classification_";
 
@@ -27,10 +27,6 @@ export function createPersistentStore<T>(key: string, startValue: T | null = nul
   return { subscribe, update, set };
 }
 
-export function getCurrentValue<T>(store: Writable<T>): T {
-  return get(store);
-}
-
-export function valueOf<T>(store: Writable<T>): T {
+export function valueOf<T>(store: Writable<T> | Readable<T>): T {
   return get(store);
 }
