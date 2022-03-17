@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from "$app/stores";
-  import { graphFactory, inputs, room } from "$lib/store";
+  import { graphFactory } from "$lib/stores/graphStore";
   import type EParticipantRole from "$lib/shared/enums/EParticipantRole";
   import type { TConnectionInfo } from "$lib/shared/graph/C2CNode";
   import type C2CNode from "$lib/shared/graph/C2CNode";
@@ -24,7 +24,7 @@
   $: layerMap = $graphFactory.getLayerConfigMap(graphConfig);
 
   let graph: Map<EParticipantRole, C2CNode<any, any>[]> = undefined;
-  $: graph = $graphFactory.buildGraph<any, any, any, any>(graphConfig);
+  $: graph = $graphFactory.buildGraph(graphConfig);
 
   let elements: { [k in EParticipantRole]?: HTMLDivElement[] };
   $: elements = [...layerMap].reduce((obj, [type, layerConfig]) => {

@@ -1,12 +1,13 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { socket } from "$lib/store";
+  import { room, name } from "$lib/stores/activityStore";
+  import { socket } from "$lib/stores/socketStore";
   import { onMount } from "svelte";
 
   export let id: string = "";
-  let room: string;
+  let roomId: string;
   let roomValid: boolean;
-  let name: string;
+  let userName: string;
 
   type TInputChangeEvent = Event & {
     currentTarget: EventTarget & HTMLInputElement;
@@ -21,18 +22,26 @@
     ]);
   };
 
-  const onRoomChange = (event: TInputChangeEvent) => {
+  const onRoomInputChange = (event: TInputChangeEvent) => {
     const currentId = event.currentTarget.value;
     checkRoom(currentId);
   };
 
+  const goToRoom = () => {
+    name.set(userName);
+    room.set(roomId);
+    goto(`${roomId}`);
+  };
+
   let readyToJoin: boolean = false;
-  $: readyToJoin = name && roomValid;
+  $: readyToJoin = userName && roomValid;
 
   onMount(() => checkRoom(id));
 </script>
 
-Name:<input placeholder="name" bind:value={name} />
-Room:<input placeholder="room" bind:value={room} on:input={onRoomChange} />
+Name:
+<input placeholder="name" bind:value={userName} />
+Room:
+<input placeholder="room" bind:value={roomId} on:input={onRoomInputChange} />
 
-<button disabled={!readyToJoin} on:click={() => goto(`${room}`)}>Join</button>
+<button disabled={!readyToJoin} on:click={goToRoom}>Join</button>

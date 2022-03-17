@@ -1,29 +1,21 @@
 <script lang="ts">
-	import Student from "$lib/components/Student.svelte";
-	import Teacher from "$lib/components/Teacher.svelte";
-	import { socket, waitForSocket } from "$lib/store";
 	import { onMount } from "svelte";
-
-	enum ERole {
-		Teacher,
-		Student,
-		Undecided,
-	}
-
-	let role: ERole = ERole.Undecided;
+	import { socket, waitForSocket } from "$lib/stores/socketStore";
+	import ChooseRole, { ERole } from "$lib/components/entry/ChooseRole.svelte";
+	import Student from "$lib/components/entry/Student.svelte";
+	import Teacher from "$lib/components/entry/Teacher.svelte";
 
 	onMount(() => {
 		socket;
 	});
+
+	let role: ERole;
 </script>
 
 {#await waitForSocket() then _}
 	<h1>
-		{#if role === ERole.Undecided}
-			Are you a
-			<button on:click={() => (role = ERole.Teacher)}>Teacher</button>
-			or a
-			<button on:click={() => (role = ERole.Student)}>Student</button>
+		{#if !role}
+			<ChooseRole bind:role />
 		{:else if role === ERole.Teacher}
 			<Teacher />
 		{:else if role === ERole.Student}

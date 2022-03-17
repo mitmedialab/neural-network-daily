@@ -8,6 +8,9 @@ import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketDa
 import { TGraphConfig, TGraphMap } from '../graph/graphConfigs';
 import GraphFactory from '../graph/GraphFactory';
 import { TDataPacket } from '../graph/C2CNode';
+import { isDevelopmentMode } from '../common/processUtils';
+
+const testRoom = isDevelopmentMode ? 'test' : undefined;
 
 function establishSocketServer(server: httpServer | httpsServer): GenericServer<TCombined> {
   const graphFactory: GraphFactory = new GraphFactory();
@@ -15,6 +18,11 @@ function establishSocketServer(server: httpServer | httpsServer): GenericServer<
   const graphByRoom: Map<string, TRoomData> = new Map<string, TRoomData>();
   const guidGenerator: GuidGenerator = new GuidGenerator();
   const socketServer: GenericServer<TCombined> = new Server<ClientToServerEvents<TCombined>, ServerToClientEvents<TCombined>, InterServerEvents, SocketData>(server);
+
+  if (isDevelopmentMode && testRoom) {
+    const config = graphFactory.getConfig(6);
+    graphByRoom.set(testRoom as string, { config, graph: graphFactory.getEmptyGraphMap(config) });
+  }
 
   socketServer.on("connection", (socket) => {
     socket.on("disconnect", () => {
@@ -90,6 +98,9 @@ function establishSocketServer(server: httpServer | httpsServer): GenericServer<
 }
 
 export const roomExists = (server: GenericServer<TCombined>, room: string): boolean => {
+  if (isDevelopmentMode && testRoom && room === testRoom) {
+    return true;
+  }
   return server.sockets.adapter.rooms.get(room) !== undefined;
 }
 

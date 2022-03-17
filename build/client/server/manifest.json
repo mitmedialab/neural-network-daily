@@ -1,0 +1,45 @@
+{
+  ".svelte-kit/build/app.js": {
+    "file": "app.js",
+    "src": ".svelte-kit/build/app.js",
+    "isEntry": true,
+    "imports": [
+      "_index-93d8b071.js"
+    ]
+  },
+  ".svelte-kit/runtime/components/layout.svelte": {
+    "file": "entries/pages/layout.svelte.js",
+    "src": ".svelte-kit/runtime/components/layout.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index-93d8b071.js"
+    ]
+  },
+  ".svelte-kit/runtime/components/error.svelte": {
+    "file": "entries/pages/error.svelte.js",
+    "src": ".svelte-kit/runtime/components/error.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index-93d8b071.js"
+    ]
+  },
+  "src/routes/index.svelte": {
+    "file": "entries/pages/index.svelte.js",
+    "src": "src/routes/index.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index-93d8b071.js"
+    ]
+  },
+  "src/routes/[id]/index.svelte": {
+    "file": "entries/pages/_id_/index.svelte.js",
+    "src": "src/routes/[id]/index.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index-93d8b071.js"
+    ]
+  },
+  "_index-93d8b071.js": {
+    "file": "chunks/index-93d8b071.js"
+  }
+}

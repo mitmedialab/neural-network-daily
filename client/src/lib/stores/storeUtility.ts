@@ -30,3 +30,7 @@ export function createPersistentStore<T>(key: string, startValue: T | null = nul
 export function getCurrentValue<T>(store: Writable<T>): T {
   return get(store);
 }
+
+export function valueOf<T>(store: Writable<T>): T {
+  return get(store);
+}
