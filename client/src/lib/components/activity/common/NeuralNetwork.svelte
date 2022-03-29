@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" context="module">
   import { graphFactory } from "$lib/stores/graphStore";
   import type EParticipantRole from "$lib/shared/enums/EParticipantRole";
   import type {
@@ -15,6 +15,9 @@
   import { getConnectionStyle } from "$lib/utils";
   import { afterUpdate } from "svelte";
 
+</script>
+
+<script lang="ts">
   export let capacity: number;
   export let self: TGraphParticipant;
   export let others: TGraphParticipant[];
@@ -22,6 +25,7 @@
   const column = true;
   const node = true;
   const output = true;
+  const gap = true;
 
   let graphConfig: TGraphConfig = undefined;
   $: graphConfig = $graphFactory.getConfig(capacity);
@@ -64,6 +68,7 @@
       }
     });
   });
+
 </script>
 
 <style>
@@ -71,6 +76,9 @@
     display: inline-block;
     margin: auto;
     vertical-align: middle;
+  }
+  .gap {
+    width: 100px;
   }
   .node {
     width: 100px;
@@ -87,6 +95,7 @@
   .pad {
     margin-top: 50px;
   }
+
 </style>
 
 <div>
@@ -97,11 +106,13 @@
           class:node
           class:pad={nodeIndex > 0}
           style={getColumnCss(layerIndex)}
-          bind:this={elements[layerType][nodeIndex]} />
+          bind:this={elements[layerType][nodeIndex]}>
+          <p>Name</p>
+        </div>
       {/each}
     </div>
     <div class:column>
-      <div style="width: 100px" />
+      <div class:gap />
     </div>
   {/each}
   <div class:column class:output style={getColumnCss(graphConfig.depth)} />
