@@ -12,3 +12,5 @@
 <Template let:args>
   <NeuralNetwork {...args} />
 </Template>
+
+<Story name="Default" />
