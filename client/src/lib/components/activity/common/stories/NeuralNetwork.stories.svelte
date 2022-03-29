@@ -7,7 +7,12 @@
 <Meta
   title="components/activity/common/NeuralNetwork"
   component={NeuralNetwork}
-  argTypes={{}} />
+  argTypes={{
+    capacity: {
+      defaultValue: 6,
+      control: { type: 'range', min: 6, max: 12, step: 1 },
+    },
+  }} />
 
 <Template let:args>
   <NeuralNetwork {...args} />

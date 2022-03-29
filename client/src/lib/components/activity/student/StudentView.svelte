@@ -1,26 +1,32 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+
   import { joinRoom } from "$lib/common/studentSocketUtils";
-  import { room, name as nameStore } from "$lib/stores/activityStore";
+  import { toInfo } from "$lib/shared/sockets/socketEvents";
+  import { room, name } from "$lib/stores/activityStore";
+  import { socket } from "$lib/stores/socketStore";
+  import { onMount } from "svelte";
   import NeuralNetwork from "../common/NeuralNetwork.svelte";
 
-  let name: string;
-  let joining = false;
-
-  const join = () => {
-    nameStore.set(name);
-    joining = true;
+  const handleBadAccess = () => {
+    if (!$name) goto("/");
   };
+
+  onMount(handleBadAccess);
+
 </script>
 
-{#if !$nameStore}
-  <input type="text" bind:value={name} />
-  <button disabled={!name} on:click={join}>Join</button>
-{/if}
-
-{#if joining}
-  {#await joinRoom($room, $nameStore) then response}
+Student
+{#if $name}
+  {#await joinRoom($room, $name) then response}
     {#if response.success}
-      <NeuralNetwork capacity={response.onSuccess?.config.capacity} />
+      <NeuralNetwork
+        capacity={response.onSuccess?.config.capacity}
+        self={{
+          participantName: $name,
+          socketID: $socket.socket.id,
+          ...toInfo(response),
+        }} />
     {:else}{response.failure}{/if}
   {/await}
 {/if}

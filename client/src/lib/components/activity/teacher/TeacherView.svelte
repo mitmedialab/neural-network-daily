@@ -4,6 +4,8 @@
   import NeuralNetwork from "../common/NeuralNetwork.svelte";
 
   let capacity: number = valueOf(capacityStore);
+
 </script>
 
+Teacher
 <NeuralNetwork {capacity} />

@@ -4,10 +4,12 @@
     Teacher,
     Student,
   }
+
 </script>
 
 <script lang="ts">
   export let choice: EChoice;
+
 </script>
 
 Are you a

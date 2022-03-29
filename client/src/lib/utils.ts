@@ -8,7 +8,7 @@ const getOffset = (el: HTMLElement): { left: number, top: number, width: number,
   };
 }
 
-export const getConnectionStyle = (div1: HTMLDivElement, div2: HTMLDivElement, color, thickness): string => {
+export const getConnectionStyle = (div1: HTMLDivElement, div2: HTMLDivElement, thickness: number): string => {
   const off1 = getOffset(div1);
   const off2 = getOffset(div2);
 
@@ -17,6 +17,9 @@ export const getConnectionStyle = (div1: HTMLDivElement, div2: HTMLDivElement, c
 
   const x2 = off2.left + off2.width / 2;
   const y2 = off2.top + off1.height / 2;
+
+  const color1 = window.getComputedStyle(div1).backgroundColor;
+  const color2 = window.getComputedStyle(div2).backgroundColor;
 
   const length = Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
 
@@ -28,7 +31,6 @@ export const getConnectionStyle = (div1: HTMLDivElement, div2: HTMLDivElement, c
   return `padding: 0px;
   margin: 0px;
   height: ${thickness}px;
-  background-color: ${color};
   line-height:1px; 
   position:absolute; 
   left: ${cx}px; 
@@ -39,5 +41,6 @@ export const getConnectionStyle = (div1: HTMLDivElement, div2: HTMLDivElement, c
   -webkit-transform:rotate(${angle}deg); 
   -o-transform:rotate(${angle}deg); 
   -ms-transform:rotate(${angle}deg); 
-  transform:rotate(${angle}deg);`;
+  transform:rotate(${angle}deg);
+  background-image: linear-gradient(to left, ${color1}, ${color1}, ${color2});`;
 }

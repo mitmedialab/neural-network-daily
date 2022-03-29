@@ -1,6 +1,7 @@
 import { io, Socket } from "socket.io-client";
 import { removeItem } from "../common/utils";
 import type { TDataPacket } from "../graph/C2CNode";
+import { TGraphParticipant } from "../graph/graphConfigs";
 import type { ServerToClientEvents, ClientToServerEvents, GenericClientSocket } from "./socketEvents";
 
 type TClientsideFunction<TDynamic> = (ServerToClientEvents<TDynamic>[keyof ServerToClientEvents<TDynamic>]);
@@ -57,6 +58,8 @@ class ClientSocketWrapper<TPacketData> {
     type startType = ServerToClientEvents<TPacketData>["start"];
     type updateType = ServerToClientEvents<TPacketData>["update"];
     type connectType = ServerToClientEvents<TPacketData>["connect"];
+    type predictionType = ServerToClientEvents<TPacketData>["prediction"];
+    type addParticipantType = ServerToClientEvents<TPacketData>["addParticipant"];
     switch (key) {
       case "connect":
         if (!this.checkType<connectType>(fn)) throw new Error(mismatchError());
@@ -83,13 +86,20 @@ class ClientSocketWrapper<TPacketData> {
         };
         return () => this.unsubscribe(name, fn);
       case "prediction":
-        if (!this.checkType<updateType>(fn)) throw new Error(mismatchError());
+        if (!this.checkType<predictionType>(fn)) throw new Error(mismatchError());
         if (this.subscribe(name, fn)) {
           this.socket.on("prediction", (packet: TDataPacket<any>) => {
             this.subscriptions.get(name)?.forEach(func => (func as ServerToClientEvents<TPacketData>["prediction"])(packet));
           });
         };
         return () => this.unsubscribe(name, fn);
+      case "addParticipant":
+        if (!this.checkType<addParticipantType>(fn)) throw new Error(mismatchError());
+        if (this.subscribe(name, fn)) {
+          this.socket.on("addParticipant", (participant: TGraphParticipant) => {
+            this.subscriptions.get(name)?.forEach(func => (func as ServerToClientEvents<TPacketData>["addParticipant"])(participant));
+          });
+        };
     }
   }
 

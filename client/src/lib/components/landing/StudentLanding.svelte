@@ -18,6 +18,7 @@
       currentId,
       (success: boolean) => {
         roomValid = success;
+        roomId = currentId;
       },
     ]);
   };
@@ -30,13 +31,14 @@
   const goToRoom = () => {
     name.set(userName);
     room.set(roomId);
-    goto(`${roomId}`);
+    goto(`/${roomId}`);
   };
 
   let readyToJoin: boolean = false;
   $: readyToJoin = userName && roomValid;
 
   onMount(() => checkRoom(id));
+
 </script>
 
 Name:
