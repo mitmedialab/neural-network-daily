@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { rgbToHex, TColor } from "$lib/colors";
+  import { lime, rgbToHex, TColor } from "$lib/colors";
 
   import displayable from "$lib/components/activity/layerDisplay/canvases/displayable.ts";
   import type { TCoordinate } from "$lib/shared/contours/TContour";
 
   export let width: number;
-  export let active: boolean;
+  export let isActive: boolean;
   export let height: number;
   export let size: number;
   export let color: TColor;
@@ -24,7 +24,7 @@
   $: context = canvas?.getContext("2d");
 
   const borderWidth = 3;
-  const activeBorderColor = "blue";
+  const activeBorderColor = rgbToHex(lime);
   const defaultColor = "grey";
   const activeStyle = `border: ${borderWidth}px solid ${activeBorderColor};`;
   const defaultStyle = `border: ${borderWidth}px solid ${defaultColor};`;
@@ -40,7 +40,7 @@
 
 <canvas
   bind:this={canvas}
-  style={active ? activeStyle : defaultStyle}
+  style={isActive ? activeStyle : defaultStyle}
   use:displayable={{
     width,
     height,

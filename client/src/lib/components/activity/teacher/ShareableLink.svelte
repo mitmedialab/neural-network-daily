@@ -12,5 +12,5 @@
 
 <h2>
   Tell your students to navigate to:
-  <a href={studentLink}>{studentLink}</a>
+  <a href={studentLink} target="_blank">{studentLink}</a>
 </h2>

@@ -187,6 +187,7 @@
       <div class:displayItem>
         <DisplayCanvas
           bind:this={displayCanvases[index]}
+          isActive={index === activeDisplayIndex}
           {size}
           {width}
           {height}
