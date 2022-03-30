@@ -1,11 +1,18 @@
+import { readable } from "svelte/store"
 import EParticipantRole from "./shared/enums/EParticipantRole"
 
-type TColor = {
+export type TColor = {
   red: number,
   green: number,
   blue: number,
   alpha?: number
 }
+
+export const lime: TColor = {
+  red: 168,
+  green: 222,
+  blue: 0
+};
 
 const yellow: TColor = {
   red: 248,
@@ -61,4 +68,14 @@ export const getColorCssForLayer = (role: EParticipantRole, cssTag?: TColorCssTa
   const css = alpha ? `rgba(${red}, ${green}, ${blue}, ${alpha})` : `rgb(${red}, ${green}, ${blue})`
   if (cssTag) return `${cssTag}: ${css};`
   return css;
+}
+
+function componentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+export function rgbToHex(color: TColor) {
+  const { red, green, blue } = color;
+  return "#" + componentToHex(red) + componentToHex(green) + componentToHex(blue);
 }

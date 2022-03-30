@@ -4,8 +4,6 @@
   import { socket } from "$lib/stores/socketStore";
   import { role, capacity as capacityStore } from "$lib/stores/activityStore";
   import EParticipantRole from "$lib/shared/enums/EParticipantRole";
-  import { graphFactory } from "$lib/stores/graphStore";
-  import { valueOf } from "$lib/stores/storeUtility";
 
   let capacity: number;
 
@@ -16,6 +14,7 @@
     capacityStore.set(capacity);
     goto(room);
   };
+
 </script>
 
 <label for="capacity">Capacity:</label>
