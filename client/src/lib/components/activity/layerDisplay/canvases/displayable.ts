@@ -6,7 +6,8 @@ export type TDisplayableInput =
     height: number,
     color: string,
     size: number,
-    path: TCoordinate[]
+    path: TCoordinate[],
+    fill?: string
   }
 
 export default function drawable(node: HTMLCanvasElement, params: TDisplayableInput) {
@@ -23,13 +24,15 @@ export default function drawable(node: HTMLCanvasElement, params: TDisplayableIn
   }
 
   function drawPath(settings: TDisplayableInput) {
-    const { width, height, size, color, path } = settings;
+    const { width, height, size, color, path, fill } = settings;
     canvas.width = width;
     canvas.height = height;
 
     context = canvas.getContext('2d');
-    context.fillStyle = "#FFF";
-    context.fillRect(0, 0, width, height); // something in the background
+    if (fill) {
+      context.fillStyle = fill;
+      context.fillRect(0, 0, width, height);
+    }
 
     if (!path) return;
     context.lineCap = 'round';

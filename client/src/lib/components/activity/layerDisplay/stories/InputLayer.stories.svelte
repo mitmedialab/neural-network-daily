@@ -9,12 +9,17 @@
 <Meta
   title="components/activity/layerDisplay/InputLayer"
   component={InputLayer}
-  argTypes={{}} />
+  argTypes={{
+    outputSize: {
+      type: 'number',
+      control: { type: 'range', min: 2, max: 6, step: 1 },
+    },
+  }} />
 
-<Story name="Default">
+<Story name="Default" let:args>
   <FunctionRunner
     mountFn={() => {
-      outputSize.set(4);
+      outputSize.set(args.outputSize);
     }}>
     <InputLayer />
   </FunctionRunner>
