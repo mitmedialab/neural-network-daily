@@ -9,9 +9,10 @@ jobs:
     steps:
       - name: Checkout base repository
         uses: actions/checkout@v3
-      - name: Retrieve submodule
-        run: git submodule update --init --recursive
-      - name: Activate local node install
-        run: source ./activate.bash
+      - name: Get node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
       - name: Setup project
         run: npm run setup
