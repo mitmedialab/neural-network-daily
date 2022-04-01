@@ -1,0 +1,19 @@
+name: DeployStorybook
+on:
+  workflow_run:
+    workflows: ["Setup Project"]
+    types:
+      - completed
+jobs:
+  build:
+    # We're running on ubuntu-latest, nothing special
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build storybook
+        run: npm run client build-storybook
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        with:
+          branch: gh-pages
+          folder: build
+          target-folder: v2

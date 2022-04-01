@@ -83,17 +83,19 @@
 
 <div class:container>
   <img class:item bind:this={image} {src} style="width: {width}px" />
-  {#each displayPaths as displayPath}
-    <canvas
-      class:item
-      use:displayable={{
-        width,
-        height,
-        size,
-        path: displayPath,
-        color: rgbToHex(displayColor),
-      }} />
-  {/each}
+  {#if displayPaths}
+    {#each displayPaths as displayPath}
+      <canvas
+        class:item
+        use:displayable={{
+          width,
+          height,
+          size,
+          path: displayPath,
+          color: rgbToHex(displayColor),
+        }} />
+    {/each}
+  {/if}
   {#if enabled}
     <canvas
       bind:this={canvas}

@@ -7,7 +7,9 @@
 <Meta
   title="components/activity/layerDisplay/canvases/DrawableImage"
   component={DrawableImage}
-  argTypes={{}} />
+  argTypes={{
+    
+  }} />
 
 <Template let:args>
   <DrawableImage {...args} />

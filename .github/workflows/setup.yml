@@ -1,0 +1,17 @@
+name: Setup Project
+on:
+  push:
+    branches: [SvelteApp, master] 
+jobs:
+  build:
+    # We're running on ubuntu-latest, nothing special
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout base repository
+        uses: actions/checkout@v3
+      - name: Retrieve submodule
+        run: git submodule update --init --recursive
+      - name: Activate local node install
+        run: source ./activate.bash
+      - name: Setup project
+        run: npm run setup

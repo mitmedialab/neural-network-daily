@@ -1,5 +1,5 @@
-./build/**
-./build*
+build/**
+docs-build/**
 ./**/node_modules
 
 # Logs

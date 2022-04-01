@@ -11,7 +11,7 @@
     "build": "npm run build:dependencies && npm run build:svelte",
     "cleanup": "rm -rf ../build/client/",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook -o ../docs-build"
   },
   "devDependencies": {
     "@babel/core": "^7.17.7",
