@@ -1,7 +1,6 @@
 name: Setup Project
 on:
-  push:
-    branches: [SvelteApp, master] 
+  workflow_call:
 jobs:
   build:
     # We're running on ubuntu-latest, nothing special
