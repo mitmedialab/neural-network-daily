@@ -80,6 +80,7 @@ function establishSocketServer(server: httpServer | httpsServer): GenericServer<
             state
           }
 
+          socket.to(roomID).emit("addParticipant", { layer, indexWithinLayer, socketID: socket.id, participantName: name })
           callback({ success, onSuccess })
         } else {
           callback({ success, failure: EJoinRoomFailure.RoomAtCapacity })

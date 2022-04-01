@@ -3,13 +3,14 @@ import type { TDataPacket } from "../graph/C2CNode";
 import type { Socket as ClientSocket } from "socket.io-client";
 import type { Socket as ServerSocket, Server } from "socket.io";
 import { TLayerInfo } from "../graph/C2CNode";
-import { TGraphConfig, TGraphState } from "../graph/graphConfigs";
+import { TGraphConfig, TGraphParticipant, TGraphState } from "../graph/graphConfigs";
 
 
 export interface ServerToClientEvents<TPacketData> {
   update: <T extends TPacketData>(data: TDataPacket<T>) => void;
   start: () => void;
   connect: () => void;
+  addParticipant: (participant: TGraphParticipant) => void;
   prediction: <T extends TPacketData>(data: TDataPacket<T>) => void;
 }
 

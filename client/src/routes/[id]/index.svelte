@@ -6,6 +6,7 @@
   import { role, room } from "$lib/stores/activityStore";
   const { id } = $page.params;
   room.set(id);
+
 </script>
 
 <style>

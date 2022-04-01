@@ -1,4 +1,4 @@
-import util from 'util';
+//import util from 'util';
 
 export async function waitForCondition(condition: () => boolean, delay: number = 100): Promise<void> {
   let timeout: NodeJS.Timeout = setTimeout(() => null, 0);
@@ -20,7 +20,8 @@ export function removeItem<T>(arr: Array<T>, value: T): Array<T> {
 }
 
 export function deepToString(obj: any): string {
-  return util.inspect(obj, { showHidden: false, depth: null, colors: true });
+  return "";
+  //return util.inspect(obj, { showHidden: false, depth: null, colors: true });
 }
 
 export function range(start: number, length: number, step: number = 1): Iterator<number> & { [Symbol.iterator]: any } {
